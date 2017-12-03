@@ -1,0 +1,3 @@
+id:int, name:string, birthday:string
+1, An Nguyen, Nov 1 1992
+2, John Machine, Jan 3 2000
