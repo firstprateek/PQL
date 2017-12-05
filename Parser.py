@@ -1,9 +1,12 @@
 import re
+import pdb
 
 class Parser:
 	COMMANDS = [
 		'use', 'show', 'create', 'select', 'insert', 'delete', 'commit', 'drop'
  	]
+
+ 	COLUMN_TYPES = [ 'int', 'string' ]
 
  	def sanitize_commas(self, query):
  		pattern = re.compile(r'[\s]*,[\s]*(?=[^()]*)')
@@ -44,6 +47,12 @@ class Parser:
 
  		return query
 
+ 	def replace_white_space(self, sentence, replace_str):
+		pattern = re.compile(r'\s+')
+		sentence = re.sub(pattern, replace_str, sentence)
+		
+		return sentence	
+
  	def sanitize_white_space(self, query):
 		query_parts = re.split(r"""("[^"]*"|'[^']*')""", query)
 		query_parts[::2] = map(lambda s: self.replace_white_space(s.lower(), "$!~^%"), query_parts[::2]) # outside quotes
@@ -51,28 +60,55 @@ class Parser:
 		return "".join(query_parts).split("$!~^%")
 	
  	def sanitize(self, query):
- 		sanitize_commas(query)
- 		sanitize_paranthesis(query)
- 		sanitize_operands(query)
- 		sanitize_white_space(query)
+ 		query = self.sanitize_commas(query)
+ 		query = self.sanitize_paranthesis(query)
+ 		query = self.sanitize_operands(query)
+ 		query = self.sanitize_white_space(query)
 
  		return query
-
-	def replace_white_space(self, sentence, replace_str):
-		pattern = re.compile(r'\s+')
-		sentence = re.sub(pattern, replace_str, sentence)
-		
-		return sentence	
-
-	
-	def validate_query_arguments(self, query):
+ 	# [{'command': 'use', 'entity': 'foo'}]
+	def validate(self, query):
 		# first make everything lower case
 		# already lower case all
 		# call this method in each command function
-		if query[entity] == not alpha numeric or starting with number
-		if others same
+		# if query[entity] == not alpha numeric or starting with number
+		# if others same
+		print "validate_query"
+		print query[0]
+		query_hash = query[0]
+		if 'entity' not in query_hash:
+			return query
+
+		if not query_hash['entity'][0].isalpha() or not query_hash['entity'].isalnum():
+			#raise syntax error
+			query[0]['error'] = 'Entity name incorrect format. Has to be alphanumeric starting with alphabet'
+			return query
+
+		if query[0]['command'] == 'create':
+			for x in query_hash['values']:
+				if not x['column_name'][0].isalpha() or not x['column_name'].isalnum():
+					query[0]['error'] = 'Column_name name incorrect format. Has to be alphanumeric starting with alphabet'
+					return query
+
+				if x['column_type'] not in Parser.COLUMN_TYPES:
+					query[0]['error'] = 'Column_type incorrect'
+					return query
 
 
+		if query[0]['command'] == 'select':
+			for x in query_hash['column_list']:
+				if not x[0].isalpha() or not x.isalnum():
+					query[0]['error'] = 'Column_name name incorrect format. Has to be alphanumeric starting with alphabet'
+					return query
+
+		if query[0]['command'] == 'insert':
+			for x in query_hash['column_values']:
+				if not x.isalnum():
+					query[0]['error'] = 'Column_value incorrect format. Has to be alphanumeric'
+					return query
+
+
+		return query
 			#checks for table name being alpha numeric etc
 			# after building a command run it thorugh
 			# entity check and column_name column_type check
@@ -98,7 +134,7 @@ class Parser:
 		command['entity'] = query_parts[2]
 		command['values'] = []
 		
-		if len(qlen(uery_parts[3::])) & 1:
+		if len(query_parts[3::]) & 1:
 			# error incorrect syntax
 			command["error"] = "Incorrect Syntax for values"
 			return [command]
@@ -137,7 +173,7 @@ class Parser:
 			'command': query_parts[0],
 			'entity': query_parts[1]
 		}]
-
+	# ['insert', 'into', 'test', 'values', '(1,', "'jon   ;;/n/n/r/r asdsad ')"]
 	def insert_command(self, query_parts):
 		command = { "command": query_parts[0] }
 
@@ -153,7 +189,7 @@ class Parser:
 			command["error"] = '4th word is not "values" in query'
 			return [command]
 		
-		command['values'] = []
+		command['column_values'] = []
 		
 		if len(query_parts[4::]) & 1:
 			# error incorrect syntax
@@ -165,15 +201,46 @@ class Parser:
 			command["error"] = "opening paranthesis not provided for column_name list"
 			return [command]
 
-		counter = 5;
+		counter = 4
+		# print
+		# print "query parts before"
+		# print query_parts
+		# print "query parts after"
+		# print
+		# query_parts[counter] = re.sub("\(", '', query_parts[counter])
+		# print query_parts
+
 		while counter < len(query_parts):
-			command['values'] += [re.sub(",", '', query_parts[counter])]
+			# not if its a string[ a if condition else b
+			res = []
+
+			# check if string is of string type
+			if query_parts[counter].count('"') > 1 or query_parts[counter].count("'") > 1:
+				if query_parts[counter][0] == '(':
+					res = [query_parts[counter][1::]]
+			else:
+				res = re.sub(",", '', query_parts[counter])
+				res = [re.sub("\(", '', res)]
+	
 			
-			if query_parts[counter + 1][-1] is ')':
-				command['values'] += [re.sub(",", '', query_parts[counter + 1])]
+			command['column_values'] +=  res
+			
+			if query_parts[counter + 1][-1] == ')':	
+				res = []
+				if query_parts[counter + 1].count('"') > 1 or query_parts[counter + 1].count("'") > 1:
+					res = [query_parts[counter + 1][0:-1]]
+				else:
+					res = [re.sub(",", '', query_parts[counter + 1][0:-1])]
+
+				command['column_values'] += res
 				break
 
 			counter += 1
+
+		print
+		print "inser query"
+		print [command]
+		print
 
 		return [command]
 
@@ -228,11 +295,14 @@ class Parser:
 		}]
 
 	def build_command(self, query_parts):
+		print "query_parts in: {}".format(query_parts)
 		command = query_parts[0]
 		if command not in Parser.COMMANDS:
 			# throw error
-			command["error"] = "Incorrect command"
-			return [command]
+			print "This command {}".format(command)
+			return [{
+				"command": query_parts[0], "error": "Incorrect command"
+			}]
 		
 		return getattr(self, "{}_command".format(command))(query_parts)
 
@@ -244,8 +314,11 @@ class Parser:
 		command_list = []
 		for query in query_list:
 			query_parts = self.sanitize(query)
-			print(query_parts)
-			command_list += self.build_command(query_parts)
+			print "print query parts"
+			print query_parts
+			print "build_commands"
+			print self.build_command(query_parts)
+			command_list += self.validate(self.build_command(query_parts))
 
 		return command_list
 
