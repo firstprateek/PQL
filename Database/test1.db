@@ -2,6 +2,13 @@ sid:int,sname:string,grade:int,age:int
 1,'jones',3,30
 2,'jonah',6,23
 3,'ahab',7,21
-4,'moby',8,33
+4,'omoby',8,33
+id:int,name:string
+1,'jack'
+2,'jill'
+3,'john'
+name:string
 PQL_DATABASE_TOC
 student,0,5
+id,5,4
+name,10,1

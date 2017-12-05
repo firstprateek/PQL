@@ -49,12 +49,14 @@ class Table:
                     self.column_type.append(line)
                     break
                 else:
+                    # running pointer in the string
                     if line[count] == ',':
                         if second_temp == 0 and first_temp == 0: second_temp = first_temp
                         elif first_temp != 0: second_temp = first_temp + 1
                         first_temp = count
                         self.column_type.append(line[second_temp:first_temp])
 
+                    # Get the last part which is from ',' to ' '
                     elif count == len(line) - 1:
                         self.column_type.append(line[first_temp + 1:count + 1])
 
@@ -67,11 +69,14 @@ class Table:
                     row.append(line)
                     break
                 else:
+                    # running pointer in the string
                     if line[count] == ',':
                         if second_temp == 0 and first_temp == 0: second_temp = first_temp
                         elif first_temp != 0: second_temp = first_temp + 1
                         first_temp = count
                         row.append(line[second_temp:first_temp])
+
+                    # Get the last part which is from ',' to ' '
                     elif count == len(line) - 1:
                         row.append(line[first_temp + 1:count + 1])
                 count = count + 1
@@ -92,25 +97,37 @@ class Table:
         self.table_content = []
 
 
-
+# A database class to store information of tables in the db file
+#
 class Database :
+    # The key word which is to decide where the list of tables starts
     key_word_PQL = ''
+
+    # A string which gets content from the db file from the starting line to the end line
     db_content = ''
-    db_start_line = 0
-    db_end_line = 0
+    db_start_line = 0 # The starting line of the list of tables
+    db_end_line = 0     # The end line
 
-    line = ''
+    line = '' # A variable is to save each line from the file. It makes easier to modify
 
+    # An array to save the information of each table
+    #['table_name', 'start_line', 'number_of_line']
     table_information = []
+
+    # A list of all tables
+    # [[information of tab1], [information of table2], ...]
     list_of_tables = []
 
+    # A dictionary formed 'table_name': [[table-column-type],[[row1 data], [row2 data], [row3 data], ...]]
     all_tables = {}
 
-
+    # A function remove '\n' and ' ' in a line
     def Verify_Line(self, line):
         line = line.rstrip('\n')
         line = line.strip()
+        line = line.translate(str.maketrans({"'":None}))
 
+    # Function detecting a table information. It gets table-name, starting-line, number-of-line
     def Get_Table_Information(self):
         self.line.strip()
         first_temp = 0
@@ -126,8 +143,11 @@ class Database :
         self.table_information.append(self.line[:first_temp])
         self.table_information.append(self.line[first_temp + 1:second_temp])
         self.table_information.append(self.line[second_temp + 1:])
+
+        # Add a table information into the list
         self.list_of_tables.append(self.table_information)
 
+    # A function to detect each line which contains a table information
     def Get_List_Of_Tables(self):
         temp = 0
         count = 0
@@ -143,12 +163,9 @@ class Database :
                 #clear table information
                 self.table_information = []
             count = count + 1
-            # if count == self.db_content.__len__() and self.db_content[count-1] != "\n":
-            #     self.line = self.db_content[temp:]
-            #     self.Get_Table_Information()
-        print(self.list_of_tables)
+        #print(self.list_of_tables)
 
-
+    # A function to reach all contents which are all information existing in the db file, and remarked below the key word
     def Read_db_Content(self, file_name):
         full_path = directory_path + file_name
         file = open(full_path, "r")
@@ -162,9 +179,8 @@ class Database :
                         self.db_content = self.db_content + '\n'
 
         file.close()
-        #print(self.db_content)
-        # print(len(self.db_content))
 
+    # A function to read the db file
     def Read_db_File(self, file_name):
         full_path = directory_path + file_name
         file = open(full_path, "r")
@@ -173,19 +189,11 @@ class Database :
             if self.key_word_PQL in line:
                 self.db_start_line = num
             if len(line.strip()): self.db_end_line = num
-
         file.close()
-        #print(self.db_start_line)
-        #print(self.db_end_line)
 
-    # def Verify_List_Table(self):
-    #     for item in self.list_of_tables:
-    #         #item[1] = str(int(item[1]) + 1)
-    #         item[2] = str(int(item[2]) + 1)
-
+    # A function is to buil the dictionary , all_tables
     def Read_Table_Content(self, file_name):
         full_path = directory_path + file_name
-
         count = 0
         while count < len(self.list_of_tables):
             file = open(full_path, "r")
@@ -203,20 +211,47 @@ class Database :
                     #print(table.table_content)
                     continue
 
-            #print(table.column_type)
-            #print(table.table_content)
-
             table_type_and_content = []
             table_type_and_content.append(table.column_type)
             table_type_and_content.append(table.table_content)
             self.all_tables [table.table_name] = table_type_and_content
-
             count = count + 1
             file.close()
 
-        #print(self.all_tables['id'])
+    # A function is to print a specific row
+    def Print_A_Line(self, _array):
+        count = 0
+        while count < len(_array):
+            if count != len(_array) - 1:
+                print(_array[count], end="|")
+            elif count == len(_array) - 1:
+                print(_array[count])
+            count = count + 1
 
+    def Show_A_Row(self, _row_data):
+        number_of_item = 0
+        while number_of_item < len(_row_data):
+            #print(_row_data[number_of_item])
+            temp = _row_data[number_of_item]
+            self.Print_A_Line(temp)
+            number_of_item = number_of_item + 1
 
+    def Show_A_Table_Content (self, _table_name):
+        print(_table_name)
+
+        #Get content of the table
+        #temp = [[columns type], [[row1], [row2], [row3]]]
+        temp = self.all_tables[_table_name]
+        temp_row_content = temp[1]
+
+        #print each row
+        self.Show_A_Row(temp_row_content)
+
+    def Show_All_Table_Content(self):
+        amount_of_table = 0
+        while amount_of_table < len(self.all_tables):
+            self.Show_A_Table_Content(self.list_of_tables[amount_of_table][0])
+            amount_of_table = amount_of_table + 1
 
     def __init__(self, db_file):
         self.key_word_PQL = PQL_TOC_KEY
@@ -238,5 +273,6 @@ class Database :
 
 
 db = Database("test1.db")
+db.Show_All_Table_Content()
 
 
