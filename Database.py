@@ -95,7 +95,6 @@ class Table:
         self.array_columns_type = {}
         self.table_content = []
 
-
 # A database class to store information of tables in the db file
 #
 class Database :
@@ -117,7 +116,8 @@ class Database :
     list_of_tables = []
     # A dictionary formed 'table_name': [[table-column-type],[[row1 data], [row2 data], [row3 data], ...]]
     all_tables = {}
-
+    # List of test queries
+    command_list = []
     # A function remove '\n' and ' ' in a line
     def Verify_Line(self, line):
         line = line.rstrip('\n')
@@ -218,6 +218,7 @@ class Database :
 #########################################################
 ############## Display TOC function group################
 #########################################################
+
     # A function is to print a specific row
     def Print_A_Line(self, _array):
         count = 0
@@ -259,6 +260,7 @@ class Database :
 #########################################################
 ############## Query Operation Group ####################
 #########################################################
+
     # Check the integer number
     def Is_Number_Valid(self, _number):
         if _number >= (-2)**63 + 1 and _number<= 2**63 + 1: return True
@@ -270,13 +272,11 @@ class Database :
             if _table_name == item[0]: return True
         return  False
 
-################# End Group #############################
-
-################ Export DB ##############################
     # Build exporting file name
     def Build_Output_File_Name(self):
         return self.export_file_name
 
+    # Build a line to export
     def Build_A_Export_Line(self, _array):
         result = ''
         count = 0
@@ -291,6 +291,7 @@ class Database :
                 count = count + 1
         return result + '\n'
 
+    # Write down to a text file
     def Export_DB(self):
         full_path = export_db_path + self.Build_Output_File_Name()
         file = open(full_path, 'w')
@@ -306,31 +307,101 @@ class Database :
         for item in self.list_of_tables:
             file.write(self.Build_A_Export_Line(item))
 
+    # Execute USE
+    def _Query_USE(self, _query_use):
+        db_name = _query_use.get('entity')
+        self.export_file_name = db_name
+        if db_name :
+            self.Read_db_File(db_name)
+            if self.db_end_line != self.db_start_line: self.Read_db_Content(db_name)
+            else: exit(0)
+            self.Get_List_Of_Tables()
+            self.Read_Table_Content(db_name)
+        else:
+            _query_use["error"] = "Can not find" + db_name
+            exit(1)
 
-    def __init__(self, db_file):
+    # Execute CREATE
+    def Count_New_Line(self):
+        result = int(self.list_of_tables[len(self.list_of_tables)-1][1]) + int(self.list_of_tables[len(self.list_of_tables)-1][2])
+        return result
+    def _Query_CREATE(self, _query_create):
+        tb_name = _query_create.get('entity')
+        if tb_name:
+            new_tb = []
+            new_line = self.Count_New_Line()
+            new_tb.append(tb_name)
+            new_tb.append(str(new_line))
+            new_tb.append('1')
+            self.list_of_tables.append(new_tb)
+
+            content_new_tb = []
+            col_declare = []
+            value = _query_create['value']
+            for item in value:
+                string = ''
+                col_name = item['column_name']
+                col_type = item['column_type']
+                string = col_name + ':' + col_type
+                col_declare.append(string)
+            content_new_tb.append(col_declare)
+            content_new_tb.append([])
+            self.all_tables[tb_name] = content_new_tb
+        else:
+            _query_create['error'] = "Please include the name of new table"
+            exit(0)
+
+    # Execute INSERT
+    def Increase_Number_Of_Line(self, _tb_name):
+        count = 0;
+        while count < len(self.list_of_tables):
+            item = self.list_of_tables[count]
+            if _tb_name == item[0]:
+                self.list_of_tables[count][2] = str(int(self.list_of_tables[count][2]) + 1)
+            count = count + 1
+    def _Query_INSERT(self, _query_insert):
+        tb_name = _query_insert['entity']
+        #print(tb_name)
+        if tb_name:
+            self.Increase_Number_Of_Line(tb_name)
+
+            content_db = self.all_tables[tb_name]
+            row_insert_value = _query_insert['row_values']
+            if len(row_insert_value) == len(content_db[0]):
+                content_db[1].append(row_insert_value)
+            else:
+                _query_insert['error'] = "Need to include or remove the number of value"
+                #print(_query_insert['error'])
+                exit(0)
+        else:
+            _query_insert['error'] = 'Can not find the table'
+            exit(0)
+
+    # Testing System
+    def System_Test(self):
+        for _query in self.command_list:
+            if _query['command'] == 'use':
+                self._Query_USE(_query)
+            if _query['command'] =='create':
+                self._Query_CREATE(_query)
+            if _query['command'] =='insert':
+                self._Query_INSERT(_query)
+
+
+    def __init__(self, _command_list):
         self.key_word_PQL = PQL_TOC_KEY
         self.db_content = ''
         self.db_start_line = 0
         self.db_end_line = 0
         self.all_tables = {}
-        self.export_file_name = db_file
+        self.command_list = _command_list
+        self.System_Test()
 
-        try:
-            self.Read_db_File(db_file)
-        except IOError:
-            print("The database file doesn't exist.")
-            exit(0)
-
-        if self.db_end_line != self.db_start_line: self.Read_db_Content(db_file)
-        else: exit(0)
-        self.Get_List_Of_Tables()
-        self.Read_Table_Content(db_file)
-
-
-db = Database("test1.db")
+db = Database([{"command":"use", "entity":"test1.db", 'error':''},
+               {"command":'create', "entity":"test", "value":[{"column_name": "id", "column_type": "int"},{"column_name": "name", "column_type": "string"}], 'error':''},
+               {"command":'insert', "entity":"test", 'row_values':['1', "jack"], 'error':''},
+               {"command": 'insert', "entity": "test", 'row_values': ['2', "A"], 'error': ''}])
 db.Show_All_Table_Content()
 db.Export_DB()
-print(db.Is_Number_Valid(20))
-print(db.Is_Table_Name_Valid('an'))
 
 
