@@ -1,5 +1,8 @@
 import sys
+import os
+import random
 
+PQL_TOC_KEY = 'PQL_DATABASE_TOC'
 directory_path ="/Users/nguyenthaian/Documents/Advanced Computer Security/pql/PQL/Database/"
 errors_list = ["Unspecified", "type_mismatch", "table_exists", "no_selected_db", "db_parse",
                "pql_parse", "int_range", "string_size"]
@@ -14,24 +17,115 @@ class Table:
     table_content = {}          #the directory containing value : column
     total_data =""
 
-    # Read the table file
-    def Read_File(self, file):
-        full_path = directory_path + self.table_name
-        try:
-            file = open(full_path, "r")
-        except IOError:
-            print("table_no_exist")
-            exit(0)
-        self.total_data = file.read()
-        print(self.total_data)
-        file.close()
-
     def __init__(self, __table_file_name):
         self.table_name = __table_file_name
         self.Read_File(__table_file_name)
 
-#class Database :
 
-table_demo = Table("student.txt")
+
+class Database :
+    key_word_PQL = ''
+    db_content = ''
+    db_start_line = 0
+    db_end_line = 0
+
+    line = ''
+
+    table_information = []
+    list_of_tables = []
+    
+
+    def Get_Table_Information(self):
+        self.line.strip()
+        first_temp = 0
+        second_temp = 0
+        count = 0
+
+        while count < self.line.__len__():
+            if self.line[count] == ',':
+                if first_temp == 0: first_temp = count
+                elif first_temp != 0 and second_temp == 0: second_temp = count
+
+            count = count + 1
+
+        self.table_information.append(self.line[:first_temp])
+        self.table_information.append(self.line[first_temp + 1:second_temp])
+        self.table_information.append(self.line[second_temp + 1:])
+        self.list_of_tables.append(self.table_information)
+
+    def Get_List_Of_Tables(self):
+        temp = 0
+        count = 0
+        self.db_content.strip()
+        #Get information of each table
+        while count < self.db_content.__len__():
+            if self.db_content[count] == "\n":
+                self.line = self.db_content[temp:count]
+                self.Get_Table_Information()
+                temp = count
+                temp = temp + 1
+
+                #clear table information
+                self.table_information = []
+            count = count + 1
+            # if count == self.db_content.__len__() and self.db_content[count-1] != "\n":
+            #     self.line = self.db_content[temp:]
+            #     self.Get_Table_Information()
+        print(self.list_of_tables)
+
+
+    def Read_db_Content(self, file_name):
+        full_path = directory_path + file_name
+        file = open(full_path, "r")
+        for num, line in enumerate(file, 1):
+            if self.db_start_line != self.db_end_line:
+                if num > self.db_start_line and num <= self.db_end_line:
+                    # check line != " " or "\n"
+                    line = line.rstrip("\n")
+                    if len(line.strip()):
+                        self.db_content = self.db_content + line
+                        self.db_content = self.db_content + '\n'
+
+        file.close()
+        print(self.db_content)
+        # print(len(self.db_content))
+
+    def Read_db_File(self, file_name):
+        full_path = directory_path + file_name
+        file = open(full_path, "r")
+        for num, line in enumerate(file, 1):
+
+            if self.key_word_PQL in line:
+                self.db_start_line = num
+            if len(line.strip()): self.db_end_line = num
+
+        file.close()
+        print(self.db_start_line)
+        print(self.db_end_line)
+
+    # def Verify_List_Table(self):
+    #     for item in self.list_of_tables:
+    #         #item[1] = str(int(item[1]) + 1)
+    #         item[2] = str(int(item[2]) + 1)
+
+    def __init__(self, db_file):
+        self.key_word_PQL = PQL_TOC_KEY
+        self.db_content = ''
+        self.db_start_line = 0
+        self.db_end_line = 0
+
+        try:
+            self.Read_db_File(db_file)
+        except IOError:
+            print("The database file doesn't exist.")
+            exit(0)
+
+        if self.db_end_line != self.db_start_line: self.Read_db_Content(db_file)
+        else: exit(0)
+
+        self.Get_List_Of_Tables()
+
+
+db = Database("test1.db")
 
 

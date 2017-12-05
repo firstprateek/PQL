@@ -1,0 +1,7 @@
+sid:int,sname:string,grade:int,age:int
+1,'jones',3,30
+2,'jonah',6,23
+3,'ahab',7,21
+4,'moby',8,33
+PQL_DATABASE_TOC
+student,0,5
