@@ -3,10 +3,11 @@ import os
 import random
 
 PQL_TOC_KEY = 'PQL_DATABASE_TOC'
-directory_path ="/Users/nguyenthaian/Documents/Advanced Computer Security/pql/PQL/Database/"
+directory_path = os.getcwd() + "/Database/"
+# directory_path ="/Users/nguyenthaian/Documents/Advanced Computer Security/pql/PQL/Database/"
 errors_list = ["Unspecified", "type_mismatch", "table_exists", "no_selected_db", "db_parse",
                "pql_parse", "int_range", "string_size"]
-export_db_path = "/Users/nguyenthaian/Documents/Advanced Computer Security/pql/PQL/output/"
+export_db_path = os.getcwd() + "/output/"
 
 #
 # The class of a table containing:
