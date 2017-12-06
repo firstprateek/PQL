@@ -566,17 +566,76 @@ class Database :
         _where = _query['where']
         _newquery = {'command':'select', 'entity':_entity, 'column_list':['*'], 'where':_where}
         selected_row = self._Query_SELECT(_newquery,1)
-        print(selected_row)
+        #print(selected_row)
         row_content = self.all_tables[_entity][1]
-        print(row_content)
+        #print(row_content)
         for i in selected_row:
             for j in row_content:
                 if i == j:
                     row_content.remove(j)
                     self.Reduce_Number_Line(_entity)
 
+    #Execute Update
+    def Get_Col_Type(self, _tb_name, _col_name):
+        col_list = self.all_tables[_tb_name][0]
+        for i in col_list:
+            if _col_name in i:
+                index = 0
+                index = i.index(":")
+                return i[index+1:]
+        return ''
+
+    def Get_Index_Col(self, _tb_name, _col_name):
+        col_list = self.all_tables[_tb_name][0]
+        for i in col_list:
+            if _col_name in i:
+                return col_list.index(i)
+        return 0
+    def _Query_UPDATE(self, _query):
+        _entity = _query['entity']
+        _where = _query['where']
+        _set = _query['set']
+        _newquery = {'command':'select', 'entity':_entity, 'column_list':['*'], 'where':_where}
+        selected_row = self._Query_SELECT(_newquery, 1)
+        row_col_type = self.all_tables[_entity][0]
+        row_content = self.all_tables[_entity][1]
+        i = 0
+        index_col = []
+        new_value = []
+        match = []
+        while i < len(_set):
+            _cname = _set[i]['column_name']
+            _newvalue = _set[i].get('argument')
+            _ctype = self.Get_Col_Type(_entity, _cname)
+            new_value.append(_newvalue)
+            index_col.append(self.Get_Index_Col(_entity, _cname))
+            bo = _ctype.isdigit() == _newvalue.isdigit()
+            if _ctype == 'string' and _newvalue.isdigit() == False:
+                bo = True
+            elif _ctype == 'int' and _newvalue.isdigit( )== True:
+                bo = True
+            elif _ctype == 'int' and _newvalue.isdigit() == False:
+                bo = False
+            elif _ctype == 'string' and _newvalue.isdigit() == True:
+                bo = False
+            match.append(bo)
+            i = i + 1
+        print(match)
+        if False in match:
+            print(_query['error'])
+            print(self.all_tables[_entity][1])
+            exit(0)
+        else:
+            row_index = 0
+            while row_index < len(selected_row):
+                row = []
+                row = selected_row[row_index]
+                for v in index_col:
+                    if row[int(v)].isdigit() == new_value[index_col.index(v)].isdigit():
+                        row[int(v)] = new_value[index_col.index(v)]
+                row_index = row_index + 1
+
         print(self.all_tables[_entity][1])
-        print(self.list_of_tables)
 
     # Testing System
     def System_Test(self):
@@ -599,9 +658,8 @@ class Database :
                 self._Query_DROPDB(_query)
             elif _query['command'] == 'delete':
                 self._Query_DELETE(_query)
-
-
-
+            elif _query['command'] == 'update':
+                self._Query_UPDATE(_query)
 
     def __init__(self, _command_list):
         self.key_word_PQL = PQL_TOC_KEY
@@ -617,11 +675,12 @@ db = Database([{'command': 'use', 'entity': 'test4'},
                {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1'},
                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1'},
                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1'},
-               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['*'], 'entity': 'test1'},
+               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
 
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
-                          {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'delete', 'entity': 'test1'}
-               ,{'command': 'commit'}])
+                          {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'update','entity': 'test1',
+                'set':[{'operator': '=', 'argument': 'jill', 'column_name': 'name'}, {'operator': '=', 'argument': 'a', 'column_name':'id'}], 'error':'mtich'},
+              {'command': 'commit'}])
 
 
 
