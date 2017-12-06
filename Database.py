@@ -306,15 +306,17 @@ class Database :
         file = open(full_path, 'w')
         #print(self.list_of_tables)
         #print(self.all_tables)
-        for temp in self.list_of_tables:
-            table_name = temp[0]
-            item = self.all_tables.get(table_name)
-            file.write(self.Build_A_Export_Line(item[0]))
-            for row_item in item[1]:
-                file.write(self.Build_A_Export_Line(row_item))
+        if not self.list_of_tables:
+            for temp in self.list_of_tables:
+                table_name = temp[0]
+                item = self.all_tables.get(table_name)
+                file.write(self.Build_A_Export_Line(item[0]))
+                for row_item in item[1]:
+                    file.write(self.Build_A_Export_Line(row_item))
         file.write(self.key_word_PQL + '\n')
-        for item in self.list_of_tables:
-            file.write(self.Build_A_Export_Line(item))
+        if not self.list_of_tables:
+            for item in self.list_of_tables:
+                file.write(self.Build_A_Export_Line(item))
 
     # Show error
     def Show_Error(self, _query):
@@ -584,7 +586,8 @@ db = Database([{'command': 'use', 'entity': 'test4'},
                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test'},
                {'command': 'commit'},
-               {'command':'dropdb', 'entity':'test4'}])
+               {'command':'drop', 'entity':'test'},
+               {'command':'commit'}])
 
 
 
