@@ -164,11 +164,12 @@ class Parser:
 
         return [{
             "command": query_parts[0],
-            "entity": query_parts[1]
+            "entity": query_parts[1],
+            "error": ""
         }]
 
     def create_command(self, query_parts):
-        query_hash = {"command": query_parts[0]}
+        query_hash = {"command": query_parts[0], "error": ""}
 
         if query_parts[1] != 'table':
             query_hash['error_flag'] = 'pql_parse_error'
@@ -217,11 +218,11 @@ class Parser:
     def show_command(self, query_parts):
         return [{
             'command': query_parts[0],
-            'entity': query_parts[1]
+            'entity': query_parts[1], "error": ""
         }]
 
     def insert_command(self, query_parts):
-        query_hash = {"command": query_parts[0]}
+        query_hash = {"command": query_parts[0], "error": ""}
 
         if query_parts[1] != 'into':
             query_hash['error_flag'] = 'pql_parse_error'
@@ -282,7 +283,7 @@ class Parser:
         return [query_hash]
 
     def select_command(self, query_parts):
-        query_hash = {"command": query_parts[0]}
+        query_hash = {"command": query_parts[0], "error": ""}
 
         where_query = []
         if 'where' in query_parts:
@@ -331,7 +332,7 @@ class Parser:
         return [query_hash]
 
     def delete_command(self, query_parts):
-        query_hash = {"command": query_parts[0]}
+        query_hash = {"command": query_parts[0], "error": ""}
 
         where_query = []
         if 'where' in query_parts:
@@ -377,24 +378,24 @@ class Parser:
 
     def commit_command(self, query_parts):
         return [{
-            "command": query_parts[0]
+            "command": query_parts[0], "error": ""
         }]
 
     def drop_command(self, query_parts):
         if query_parts[1] == 'database':
             return [{
-                "command": "dropdb"
+                "command": "dropdb", "error": ""
             }]
         elif query_parts[1] == 'table':
             return [{
                 "command": "drop",
-                "entity": query_parts[2]
+                "entity": query_parts[2], "error": ""
             }]
 
     # ['update', 'test', 'set', 'name', '=', "'bob'", 'where', 'name', '=', "'jill'"]:
     def update_command(self, query_parts):
         query_hash = {
-            "command": query_parts[0], "entity": query_parts[1]
+            "command": query_parts[0], "entity": query_parts[1], "error": ""
         }
 
         if query_parts[2] != 'set':

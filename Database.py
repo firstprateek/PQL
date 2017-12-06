@@ -673,12 +673,13 @@ class Database :
         self.db_end_line = 0
         self.all_tables = {}
         self.command_list = _command_list
-        try:
-            self.System_Test()
-        except Exception or IOError or EOFError or EnvironmentError:
-            print('Unspecified')
-            exit(0)
+        self.System_Test()
+        # try:
+            
+        # except Exception or IOError or EOFError or EnvironmentError:
+        #     print('Unspecified')
+        #     exit(0)
 
-db = Database([{'command': 'use', 'entity': 'test5'}, {'command': 'create', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'entity': 'test', 'row_values': ['1', 'jack']}, {'command': 'insert', 'entity': 'test', 'row_values': ['2', 'jill']}, {'command': 'insert', 'entity': 'test', 'row_values': ['3', 'john']}, {'command': 'select', 'entity': 'test', 'column_list': ['*'], 'where': [{'column_name': 'name', 'operator': '>=', 'argument': 'jill'}], 'error_flag': 'pql_parse_error', 'error': 'Column_name name incorrect format. Has to be alphanumeric starting with alphabet'}, {'command': 'commit'}])
+# db = Database([{'command': 'use', 'entity': 'test5'}, {'command': 'create', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'entity': 'test', 'row_values': ['1', 'jack']}, {'command': 'insert', 'entity': 'test', 'row_values': ['2', 'jill']}, {'command': 'insert', 'entity': 'test', 'row_values': ['3', 'john']}, {'command': 'select', 'entity': 'test', 'column_list': ['*'], 'where': [{'column_name': 'name', 'operator': '>=', 'argument': 'jill'}], 'error_flag': 'pql_parse_error', 'error': 'Column_name name incorrect format. Has to be alphanumeric starting with alphabet'}, {'command': 'commit'}])
 
 
