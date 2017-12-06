@@ -2,86 +2,82 @@ import re
 import pdb
 
 class Parser:
-	COMMANDS = [
-		'use', 'show', 'create', 'select', 'insert', 'delete', 'commit', 'drop', 'update'
- 	]
+	COMMANDS = ['use', 'show', 'create', 'select', 'insert', 'delete', 'commit', 'drop', 'update']
 
- 	COLUMN_TYPES = [ 'int', 'string' ]
-
-
- 	# --------- Query Sanitization Start --------
+	COLUMN_TYPES = ['int', 'string']
+	# --------- Query Sanitization Start --------
 
 
- 	def sanitize_commas(self, query):
- 		pattern = re.compile(r'[\s]*,[\s]*(?=[^()]*)')
- 		query = re.sub(pattern, ', ', query)
- 		
- 		return query
+	def sanitize_commas(self, query):
+		pattern = re.compile(r'[\s]*,[\s]*(?=[^()]*)')
+		query = re.sub(pattern, ', ', query)
 
- 	def sanitize_paranthesis(self, query):
- 		pattern = re.compile(r'(?!\B"[^"]*)\([\s]+(?![^"]*"\B)')
- 		query = re.sub(pattern, '(', query)
- 		pattern = re.compile(r'(?!\B"[^"]*)[\s]+\)(?![^"]*"\B)')
- 		query = re.sub(pattern, ')', query)
- 		
- 		return query
+		return query
 
- 	def sanitize_operands(self, query):
- 		pattern = re.compile(r'(?!\B"[^"]*)(?<![<!>])[\s]*=[\s]*(?![^"]*"\B)')
- 		query = re.sub(pattern, ' = ', query)
+	def sanitize_paranthesis(self, query):
+		pattern = re.compile(r'(?!\B"[^"]*)\([\s]+(?![^"]*"\B)')
+		query = re.sub(pattern, '(', query)
+		pattern = re.compile(r'(?!\B"[^"]*)[\s]+\)(?![^"]*"\B)')
+		query = re.sub(pattern, ')', query)
+		
+		return query
 
- 		pattern = re.compile(r'(?!\B"[^"]*)[\s]*<=[\s]*(?![^"]*"\B)')
- 		query = re.sub(pattern, ' <= ', query)
+	def sanitize_operands(self, query):
+		pattern = re.compile(r'(?!\B"[^"]*)(?<![<!>])[\s]*=[\s]*(?![^"]*"\B)')
+		query = re.sub(pattern, ' = ', query)
 
- 		pattern = re.compile(r'(?!\B"[^"]*)[\s]*>=[\s]*(?![^"]*"\B)')
- 		query = re.sub(pattern, ' >= ', query)
+		pattern = re.compile(r'(?!\B"[^"]*)[\s]*<=[\s]*(?![^"]*"\B)')
+		query = re.sub(pattern, ' <= ', query)
 
- 		pattern = re.compile(r'(?!\B"[^"]*)[\s]*!=[\s]*(?![^"]*"\B)')
- 		query = re.sub(pattern, ' != ', query)
+		pattern = re.compile(r'(?!\B"[^"]*)[\s]*>=[\s]*(?![^"]*"\B)')
+		query = re.sub(pattern, ' >= ', query)
 
- 		pattern = re.compile(r'(?!\B"[^"]*)[\s]*<>[\s]*(?![^"]*"\B)')
- 		query = re.sub(pattern, ' <> ', query)
+		pattern = re.compile(r'(?!\B"[^"]*)[\s]*!=[\s]*(?![^"]*"\B)')
+		query = re.sub(pattern, ' != ', query)
 
- 		pattern = re.compile(r'(?!\B"[^"]*)(?<!\<)[\s]*>[\s]*(?!\=)(?![^"]*"\B)')
- 		query = re.sub(pattern, ' > ', query)
+		pattern = re.compile(r'(?!\B"[^"]*)[\s]*<>[\s]*(?![^"]*"\B)')
+		query = re.sub(pattern, ' <> ', query)
+
+		pattern = re.compile(r'(?!\B"[^"]*)(?<!\<)[\s]*>[\s]*(?!\=)(?![^"]*"\B)')
+		query = re.sub(pattern, ' > ', query)
 
 
- 		pattern = re.compile(r'(?!\B"[^"]*)[\s]*>[\s]*(?![=>])(?![^"]*"\B)')
- 		query = re.sub(pattern, ' < ', query)
+		pattern = re.compile(r'(?!\B"[^"]*)[\s]*>[\s]*(?![=>])(?![^"]*"\B)')
+		query = re.sub(pattern, ' < ', query)
 
- 		return query
+		return query
 
- 	def replace_white_space(self, sentence, replace_str):
+	def replace_white_space(self, sentence, replace_str):
 		pattern = re.compile(r'\s+')
 		sentence = re.sub(pattern, replace_str, sentence)
 		
 		return sentence
 
- 	def sanitize_white_space(self, query):
+	def sanitize_white_space(self, query):
 		query_parts = re.split(r"""("[^"]*"|'[^']*')""", query)
-		query_parts[::2] = map(lambda s: self.replace_white_space(s.lower(), "$!~^%"), query_parts[::2]) # outside quotes
+		query_parts[::2] = list(map(lambda s: self.replace_white_space(s.lower(), "$!~^%"), query_parts[::2])) # outside quotes
 		
 		return "".join(query_parts).split("$!~^%")
 	
- 	def sanitize(self, query):
- 		query = self.sanitize_commas(query)
- 		query = self.sanitize_paranthesis(query)
- 		query = self.sanitize_operands(query)
- 		query = self.sanitize_white_space(query)
+	def sanitize(self, query):
+		query = self.sanitize_commas(query)
+		query = self.sanitize_paranthesis(query)
+		query = self.sanitize_operands(query)
+		query = self.sanitize_white_space(query)
 
- 		return query
+		return query
 
 
- 	# --------- Query Sanitization Finish --------
- 	def extract_string(self, test_string):
- 		if test_string[0] in ['"', "'"] and test_string[-1] in ['"', "'"]:
- 			return test_string[1:-1]
- 		else:
- 			return test_string
+	# --------- Query Sanitization Finish --------
+	def extract_string(self, test_string):
+		if test_string[0] in ['"', "'"] and test_string[-1] in ['"', "'"]:
+			return test_string[1:-1]
+		else:
+			return test_string
  	
 	def validate(self, query):
-		print "validate_query"
-		print query
+		print("validate_query")
+		print(query)
 		
 		query_hash = query[0]
 		if 'entity' not in query_hash:
@@ -129,7 +125,7 @@ class Parser:
 					return query
 
 		if query[0]['command'] == 'insert':
-			query_hash['row_values'] = map(lambda x: self.extract_string(x), query_hash['row_values'])
+			query_hash['row_values'] = list(map(lambda x: self.extract_string(x), query_hash['row_values']))
 			
 			for x in query_hash['row_values']:
 					if not x.isdigit():
@@ -281,9 +277,9 @@ class Parser:
 
 		query_hash["entity"] = query_parts[-1]
 		
-		print "query_parts[1:-2] before: {}".format(query_parts[1:-2])
-		query_hash["column_list"] = map(lambda x: re.sub(",", '', x), query_parts[1:-2])
-		print "query_parts[1:-2] after: {}".format(query_hash["column_list"])
+		print("query_parts[1:-2] before: {}".format(query_parts[1:-2]))
+		query_hash["column_list"] = list(map(lambda x: re.sub(",", '', x), query_parts[1:-2]))
+		print("query_parts[1:-2] after: {}".format(query_hash["column_list"]))
 
 		if where_query:
 			operations_query = [x for x in where_query[1::] if x != 'and' and x != 'or']
@@ -372,11 +368,11 @@ class Parser:
 
 
 	def build_command(self, query_parts):
-		print "sanitized query_parts is {}: ".format(query_parts)
+		print("sanitized query_parts is {}: ".format(query_parts))
 		
 		command = query_parts[0]
 		if command not in Parser.COMMANDS:
-			print "This command {} is not implemented".format(command)
+			print("This command {} is not implemented".format(command))
 			
 			return [{
 				"command": query_parts[0],
@@ -395,7 +391,7 @@ class Parser:
 
 		query_list = []
 		for query in input_query_list:
-			print "query is {}: ".format(query)
+			print("query is {}: ".format(query))
 			sanitized_query_parts = self.sanitize(query)
 			query_list += self.validate(self.build_command(sanitized_query_parts))
 
