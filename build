@@ -1,6 +1,7 @@
 #!/bin/bash
 
+rm -rf dist
 mkdir dist
 cp *.py dist/
 mv dist/Engine.py dist/pql
-chmod u+x dist/pql
+chmod +x dist/pql
