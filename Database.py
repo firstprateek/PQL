@@ -325,7 +325,7 @@ class Database :
     # Show error
     def Show_Error(self, _query):
         print(_query['error'])
-        print(_query['error_flag'])
+        #print(_query['error_flag'])
         exit(0)
     # Execute USE
     def _Query_USE(self, _query_use):
@@ -341,8 +341,7 @@ class Database :
                 self.list_of_tables = []
                 self.all_tables = {}
         else:
-            _query_use["error"] = "Can not find" + db_name
-            exit(1)
+            self.Show_Error(_query_use)
 
     # Execute CREATE
     def Count_New_Line(self):
@@ -351,6 +350,10 @@ class Database :
         return result
     def _Query_CREATE(self, _query_create):
         tb_name = _query_create.get('entity')
+
+        for i in self.list_of_tables:
+            if tb_name == i[0]:
+                self.Show_Error(_query_create)
 
         if tb_name:
             new_tb = []
@@ -396,12 +399,9 @@ class Database :
             if len(row_insert_value) == len(content_db[0]):
                 content_db[1].append(row_insert_value)
             else:
-                _query_insert['error'] = "Need to include or remove the number of value"
-                #print(_query_insert['error'])
-                exit(0)
+                self.Show_Error(_query_insert)
         else:
-            _query_insert['error'] = 'Can not find the table'
-            exit(0)
+            self.Show_Error(_query_insert)
 
     # Execute select
     def Delete_Single_Quote(self, _string):
@@ -668,13 +668,17 @@ class Database :
         self.db_end_line = 0
         self.all_tables = {}
         self.command_list = _command_list
-        self.System_Test()
+        try:
+            self.System_Test()
+        except Exception or IOError or EOFError or EnvironmentError:
+            print('Unspecified')
+            exit(0)
 
 db = Database([{'command': 'use', 'entity': 'test4'},
-               {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test1'},
-               {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1'},
-               {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1'},
-               {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1'},
+               {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test1','error':'tb_exists','error_flag':'table exists'},
+               {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
+               {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1', 'error':'type_mismatch'},
+               {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
                {'command':'commit'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
