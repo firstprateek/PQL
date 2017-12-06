@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df1b0100-60da-41e2-a29f-41b5c74406a2" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database.py" afterPath="$PROJECT_DIR$/Database.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Database/test1.db" afterPath="$PROJECT_DIR$/Database/test1.db" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/test1.db" afterPath="$PROJECT_DIR$/output/test1.db" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,8 +17,8 @@
       <file leaf-file-name="Database.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Database.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3554">
-              <caret line="546" column="18" lean-forward="true" selection-start-line="546" selection-start-column="15" selection-end-line="546" selection-end-column="18" />
+            <state relative-caret-position="127">
+              <caret line="493" column="13" lean-forward="false" selection-start-line="493" selection-start-column="13" selection-end-line="493" selection-end-column="13" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
                 <element signature="e#1058#3469#0" expanded="false" />
@@ -35,7 +34,6 @@
                 <element signature="e#14730#14760#0" expanded="false" />
                 <element signature="e#14808#15110#0" expanded="false" />
                 <element signature="e#15176#15640#0" expanded="false" />
-                <marker date="1512533436000" expanded="false" signature="15882:18750" ph="..." />
               </folding>
             </state>
           </provider>
@@ -55,7 +53,7 @@
         <entry file="file://$PROJECT_DIR$/output/test1.db">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="135">
-              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -196,7 +194,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17496444" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22617353" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -240,7 +238,6 @@
             <element signature="e#14730#14760#0" expanded="false" />
             <element signature="e#14808#15110#0" expanded="false" />
             <element signature="e#15176#15640#0" expanded="false" />
-            <marker date="1512533436000" expanded="false" signature="15882:18750" ph="..." />
           </folding>
         </state>
       </provider>
@@ -272,7 +269,6 @@
             <element signature="e#14730#14760#0" expanded="false" />
             <element signature="e#14808#15110#0" expanded="false" />
             <element signature="e#15176#15640#0" expanded="false" />
-            <marker date="1512533436000" expanded="false" signature="15882:18750" ph="..." />
           </folding>
         </state>
       </provider>
@@ -311,7 +307,6 @@
             <element signature="e#14730#14760#0" expanded="false" />
             <element signature="e#14808#15110#0" expanded="false" />
             <element signature="e#15176#15640#0" expanded="false" />
-            <marker date="1512533436000" expanded="false" signature="15882:18750" ph="..." />
           </folding>
         </state>
       </provider>
@@ -357,15 +352,15 @@
     <entry file="file://$PROJECT_DIR$/output/test1.db">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Database.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3554">
-          <caret line="546" column="18" lean-forward="true" selection-start-line="546" selection-start-column="15" selection-end-line="546" selection-end-column="18" />
+        <state relative-caret-position="127">
+          <caret line="493" column="13" lean-forward="false" selection-start-line="493" selection-start-column="13" selection-end-line="493" selection-end-column="13" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
             <element signature="e#1058#3469#0" expanded="false" />
@@ -381,7 +376,6 @@
             <element signature="e#14730#14760#0" expanded="false" />
             <element signature="e#14808#15110#0" expanded="false" />
             <element signature="e#15176#15640#0" expanded="false" />
-            <marker date="1512533436000" expanded="false" signature="15882:18750" ph="..." />
           </folding>
         </state>
       </provider>

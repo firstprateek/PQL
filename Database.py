@@ -420,12 +420,22 @@ class Database :
         elif _con is 'or': return  _value1 or _value2
         else: return  False
 
-    def _Query_SELECT(self, _query_select):
+    def Show_Select_Result(self, _tb_name, _array_result_, _array_index):
+        print(_tb_name)
+        result = []
+        for i in _array_result_:
+            temp = []
+            for j in _array_index:
+                temp.append(i[int(j)])
+            result.append(temp)
+        self.Show_A_Row(result)
+
+    def _Query_SELECT(self, _query_select, Code=0):
         tb_name = _query_select['entity']
+        selected_col_list = []
         if tb_name :
             col_list = self.Get_Col_List(tb_name)
             #print(col_list)
-            selected_col_list = []
             temp = _query_select['column_list']
             if len(temp) == 1 and temp[0] == '*':
                 selected_col_list = col_list
@@ -473,13 +483,23 @@ class Database :
                 connection = connection + 1
             #print(last_condition_result)
             run_result = 0
+            selected_row = []
             while run_result < len(last_condition_result):
                 if last_condition_result[run_result] == True :
-                    print(tb_name)
                     x = self.all_tables[tb_name][1]
                     #print(x[run_result])
-                    self.Print_A_Line(x[run_result])
+                    selected_row.append(x[run_result])
                 run_result = run_result + 1
+            #print(selected_row)
+            #print(selected_col_list)
+            index_result = []
+            for v in selected_col_list:
+                colum_tab = self.all_tables[tb_name][0]
+                for k in colum_tab:
+                    if v in k: index_result.append(colum_tab.index(k))
+            #print(index_result)
+            self.Show_Select_Result(tb_name,selected_row, index_result)
+
 
     # Execute Show
     def _Query_SHOW(self, _query):
