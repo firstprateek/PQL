@@ -674,17 +674,17 @@ class Database :
             print('Unspecified')
             exit(0)
 
-db = Database([{'command': 'use', 'entity': 'test4'},
-               {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test1','error':'tb_exists','error_flag':'table exists'},
-               {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
-               {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1', 'error':'type_mismatch'},
-               {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
-               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
-               {'command':'commit'},
-               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
-                          {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'update','entity': 'test1',
-                'set':[{'operator': '=', 'argument': 'jill', 'column_name': 'name'}, {'operator': '=', 'argument': 'a', 'column_name':'id'}], 'error':'mtich'},
-              {'command': 'commit'}])
+# db = Database([{'command': 'use', 'entity': 'test4'},
+#                {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test1','error':'tb_exists','error_flag':'table exists'},
+#                {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
+#                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1', 'error':'type_mismatch'},
+#                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
+#                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
+#                {'command':'commit'},
+#                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
+#                           {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'update','entity': 'test1',
+#                 'set':[{'operator': '=', 'argument': 'jill', 'column_name': 'name'}, {'operator': '=', 'argument': 'a', 'column_name':'id'}], 'error':'mtich'},
+#               {'command': 'commit'}])
 
 
 
