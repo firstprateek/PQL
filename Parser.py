@@ -77,8 +77,8 @@ class Parser:
             return test_string
 
     def validate(self, query):
-        print("validate_query")
-        print(query)
+        # print("validate_query")
+        # print(query)
 
         query_hash = query[0]
         if 'entity' not in query_hash:
@@ -161,11 +161,15 @@ class Parser:
 
     def use_command(self, query_parts):
         self._active_db = query_parts[1]
+        error_flag = ''
+        if len(query_parts) > 2:
+        	error_flag = "pql_parse_error"
 
         return [{
             "command": query_parts[0],
             "entity": query_parts[1],
-            "error": ""
+            "error": "",
+            "error_flag": error_flag
         }]
 
     def create_command(self, query_parts):
@@ -300,9 +304,7 @@ class Parser:
 
         query_hash["entity"] = query_parts[-1]
 
-        print("query_parts[1:-2] before: {}".format(query_parts[1:-2]))
         query_hash["column_list"] = list(map(lambda x: re.sub(",", '', x), query_parts[1:-2]))
-        print("query_parts[1:-2] after: {}".format(query_hash["column_list"]))
 
         if where_query:
             operations_query = [x for x in where_query[1::] if x != 'and' and x != 'or']
@@ -462,11 +464,11 @@ class Parser:
 
 
     def build_command(self, query_parts):
-        print("sanitized query_parts is {}: ".format(query_parts))
+        # print("sanitized query_parts is {}: ".format(query_parts))
 
         command = query_parts[0]
         if command not in Parser.COMMANDS:
-            print("This command {} is not implemented".format(command))
+            # print("This command {} is not implemented".format(command))
 
             return [{
                 "command": query_parts[0],
@@ -486,7 +488,7 @@ class Parser:
 
         query_list = []
         for query in input_query_list:
-            print("query is {}: ".format(query))
+            # print("query is {}: ".format(query))
             sanitized_query_parts = self.sanitize(query)
             query_list += self.validate(self.build_command(sanitized_query_parts))
 

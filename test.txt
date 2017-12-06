@@ -1,7 +1,6 @@
-use test3;
-create table test (id int, name string);
-insert into test values (1, 'jack');
-insert into test values (2, 'jill');
-insert into test values (3, 'john');
-show tables
+use test 10; create table ta (name string, id int); insert into ta values ('
+The name
+is a
+couple of new lines', 5);
+select name from ta;
 commit;

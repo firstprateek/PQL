@@ -8,12 +8,17 @@ input_string = "".join(sys.stdin.readlines())
 pql_parser = Parser(input_string)
 query_list = pql_parser.build_query_list()
 
-print("")
-print(" ---------------- RESULT ---------------")
-print("")
-print(query_list)
-print("")
-print(" ---------------- RESULT ---------------")
-print("")
+for x in query_list:
+	if 'error_flag' in x:
+		if x['error_flag'] == 'pql_parse_error':
+			exit(6)
+
+# print("")
+# print(" ---------------- RESULT ---------------")
+# print("")
+# print(query_list)
+# print("")
+# print(" ---------------- RESULT ---------------")
+# print("")
 
 pql_database = Database(query_list)
