@@ -556,10 +556,27 @@ class Database :
         self.Remove_DB(_query)
 
     # Execute Delete
+    # Reduce number line
+    def Reduce_Number_Line(self, _tb_name):
+        for i in self.list_of_tables:
+            if _tb_name == i[0]:
+                i[2] = str(int(i[2]) - 1)
     def _Query_DELETE(self, _query):
-        _newquery = [{'command':'select', 'entity':_query['entity'], 'column_list':['*'], 'where':_query['where']}]
+        _entity = _query['entity']
+        _where = _query['where']
+        _newquery = {'command':'select', 'entity':_entity, 'column_list':['*'], 'where':_where}
         selected_row = self._Query_SELECT(_newquery,1)
         print(selected_row)
+        row_content = self.all_tables[_entity][1]
+        print(row_content)
+        for i in selected_row:
+            for j in row_content:
+                if i == j:
+                    row_content.remove(j)
+                    self.Reduce_Number_Line(_entity)
+
+        print(self.all_tables[_entity][1])
+        print(self.list_of_tables)
 
     # Testing System
     def System_Test(self):
@@ -600,12 +617,11 @@ db = Database([{'command': 'use', 'entity': 'test4'},
                {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1'},
                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1'},
                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1'},
-               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
-               {'command': 'commit'},
+               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['*'], 'entity': 'test1'},
+
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
-                          {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'delete',
-                'entity': 'test1'}
-               ])
+                          {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'delete', 'entity': 'test1'}
+               ,{'command': 'commit'}])
 
 
 
