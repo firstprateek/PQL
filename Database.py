@@ -264,6 +264,10 @@ class Database :
         while amount_of_table < len(self.all_tables):
             self.Show_A_Table_Content(self.list_of_tables[amount_of_table][0])
             amount_of_table = amount_of_table + 1
+        else:
+            print("The db is empty")
+            print("Unspecified")
+            exit(0)
 
 #########################################################
 ############## Query Operation Group ####################
@@ -524,7 +528,8 @@ class Database :
     # Execute Show
     def _Query_SHOW(self, _query):
         tb_name = _query['entity']
-        if tb_name : self.Show_A_Table_Content(tb_name)
+        if tb_name != 'tables' : self.Show_A_Table_Content(tb_name)
+        elif tb_name == 'tables' : self.Show_All_Table_Content()
         else:
             self.Show_Error(_query)
 
@@ -674,7 +679,7 @@ class Database :
             print('Unspecified')
             exit(0)
 
-# db = Database([{'command': 'use', 'entity': 'test4'},
+db = Database([{'command': 'use', 'entity': 'test4'},{'command':'show', 'entity':'tables'}
 #                {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test1','error':'tb_exists','error_flag':'table exists'},
 #                {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
 #                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1', 'error':'type_mismatch'},
@@ -685,6 +690,6 @@ class Database :
 #                           {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'update','entity': 'test1',
 #                 'set':[{'operator': '=', 'argument': 'jill', 'column_name': 'name'}, {'operator': '=', 'argument': 'a', 'column_name':'id'}], 'error':'mtich'},
 #               {'command': 'commit'}])
-
+                ])
 
 

@@ -1,7 +1,2 @@
-use test5;
-create table test (id int, name string);
-insert into test values (1, 'jack');
-insert into test values (2, 'jill');
-insert into test values (3, 'john');
-select name from test where name>='jill' and id = 3;
-commit;
+use test1;
+show tables;
