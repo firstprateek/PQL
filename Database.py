@@ -679,17 +679,6 @@ class Database :
             print('Unspecified')
             exit(0)
 
-db = Database([{'command': 'use', 'entity': 'test4'},{'command':'show', 'entity':'tables'}
-#                {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test1','error':'tb_exists','error_flag':'table exists'},
-#                {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
-#                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1', 'error':'type_mismatch'},
-#                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1','error':'type_mismatch'},
-#                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
-#                {'command':'commit'},
-#                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
-#                           {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'update','entity': 'test1',
-#                 'set':[{'operator': '=', 'argument': 'jill', 'column_name': 'name'}, {'operator': '=', 'argument': 'a', 'column_name':'id'}], 'error':'mtich'},
-#               {'command': 'commit'}])
-                ])
+db = Database([{'command': 'use', 'entity': 'test5'}, {'command': 'create', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'entity': 'test', 'row_values': ['1', 'jack']}, {'command': 'insert', 'entity': 'test', 'row_values': ['2', 'jill']}, {'command': 'insert', 'entity': 'test', 'row_values': ['3', 'john']}, {'command': 'select', 'entity': 'test', 'column_list': ['*'], 'where': [{'column_name': 'name', 'operator': '>=', 'argument': 'jill'}], 'error_flag': 'pql_parse_error', 'error': 'Column_name name incorrect format. Has to be alphanumeric starting with alphabet'}, {'command': 'commit'}])
 
 
