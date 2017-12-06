@@ -190,11 +190,10 @@ class Database :
                 if self.key_word_PQL in line:
                     self.db_start_line = num
                 if len(line.strip()): self.db_end_line = num
-            file.close()
+                file.closed
         except FileNotFoundError:
             self.Export_DB(1)
             self.Read_db_File(file_name)
-            raise
 
     # A function is to buil the dictionary , all_tables
     def Read_Table_Content(self, file_name):
@@ -523,7 +522,7 @@ class Database :
 
     # Execute Commit
     def _Query_COMMIT(self,_query):
-        self.Export_DB()
+        self.Export_DB(1)
 
     # Execute Drop Table
     def _Query_DROP(self, _query):
@@ -574,7 +573,7 @@ class Database :
         self.command_list = _command_list
         self.System_Test()
 
-db = Database([{'command': 'use', 'entity': 'test2'},
+db = Database([{'command': 'use', 'entity': 'test4'},
                {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test'},
                {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test'},
                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test'},
