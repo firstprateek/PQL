@@ -3,11 +3,11 @@ import os
 import random
 
 PQL_TOC_KEY = 'PQL_DATABASE_TOC'
-directory_path = os.getcwd() + "/Database/"
+directory_path = os.getcwd() + '/'
 # directory_path ="/Users/nguyenthaian/Documents/Advanced Computer Security/pql/PQL/Database/"
 errors_list = ["Unspecified", "type_mismatch", "table_exists", "no_selected_db", "db_parse",
                "pql_parse", "int_range", "string_size"]
-export_db_path = os.getcwd() + "/output/"
+export_db_path = os.getcwd() + '/'
 
 #
 # The class of a table containing:
@@ -264,10 +264,7 @@ class Database :
         while amount_of_table < len(self.all_tables):
             self.Show_A_Table_Content(self.list_of_tables[amount_of_table][0])
             amount_of_table = amount_of_table + 1
-        else:
-            print("The db is empty")
-            print("Unspecified")
-            exit(0)
+
 
 #########################################################
 ############## Query Operation Group ####################
@@ -305,8 +302,8 @@ class Database :
 
     # Write down to a text file
     def Export_DB(self, _path = 0):
-        if _path  == 0 : full_path = export_db_path + self.Build_Output_File_Name()
-        elif _path == 1: full_path = directory_path + self.Build_Output_File_Name()
+        if _path  == 0 : full_path = export_db_path + self.export_file_name
+        elif _path == 1: full_path = directory_path + self.export_file_name
 
         file = open(full_path, 'w')
         #print(self.list_of_tables)
@@ -327,10 +324,10 @@ class Database :
         file.close()
 
     # Show error
-    def Show_Error(self, _query):
-        print(_query['error'])
-        #print(_query['error_flag'])
-        exit(0)
+    # def Show_Error(self, _query):
+    #     print(_query['error'])
+    #     #print(_query['error_flag'])
+    #     exit(0)
     # Execute USE
     def _Query_USE(self, _query_use):
         db_name = _query_use.get('entity')+'.db'
@@ -345,7 +342,7 @@ class Database :
                 self.list_of_tables = []
                 self.all_tables = {}
         else:
-            self.Show_Error(_query_use)
+            print('_Query_USE')
 
     # Execute CREATE
     def Count_New_Line(self):
@@ -357,7 +354,8 @@ class Database :
 
         for i in self.list_of_tables:
             if tb_name == i[0]:
-                self.Show_Error(_query_create)
+                print('_Query_CREATE')
+                exit(0)
 
         if tb_name:
             new_tb = []
@@ -403,9 +401,11 @@ class Database :
             if len(row_insert_value) == len(content_db[0]):
                 content_db[1].append(row_insert_value)
             else:
-                self.Show_Error(_query_insert)
+                print("_Query_INSERT")
+                exit(0)
         else:
-            self.Show_Error(_query_insert)
+            print("_Query_INSERT")
+            exit(0)
 
     # Execute select
     def Delete_Single_Quote(self, _string):
@@ -527,11 +527,13 @@ class Database :
 
     # Execute Show
     def _Query_SHOW(self, _query):
-        tb_name = _query['entity']
-        if tb_name != 'tables' : self.Show_A_Table_Content(tb_name)
-        elif tb_name == 'tables' : self.Show_All_Table_Content()
-        else:
-            self.Show_Error(_query)
+        #tb_name = _query['entity']
+        self.Show_All_Table_Content()
+        # if tb_name != 'tables' : self.Show_A_Table_Content(tb_name)
+        # elif tb_name == 'tables' : self.Show_All_Table_Content()
+        # else:
+        #     print("_Query_SHOW")
+        #     exit(0)
 
     # Execute Commit
     def _Query_COMMIT(self,_query):
@@ -548,7 +550,8 @@ class Database :
                 if i[0] == tb_name:
                     self.list_of_tables.remove(i)
         else:
-            self.Show_Error(_query)
+            print("_Query_DROP")
+            exit(0)
         #print(self.list_of_tables)
 
     # Execute Drop Database
@@ -680,6 +683,6 @@ class Database :
         #     print('Unspecified')
         #     exit(0)
 
-# db = Database([{'command': 'use', 'entity': 'test5'}, {'command': 'create', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'entity': 'test', 'row_values': ['1', 'jack']}, {'command': 'insert', 'entity': 'test', 'row_values': ['2', 'jill']}, {'command': 'insert', 'entity': 'test', 'row_values': ['3', 'john']}, {'command': 'select', 'entity': 'test', 'column_list': ['*'], 'where': [{'column_name': 'name', 'operator': '>=', 'argument': 'jill'}], 'error_flag': 'pql_parse_error', 'error': 'Column_name name incorrect format. Has to be alphanumeric starting with alphabet'}, {'command': 'commit'}])
+#db = Database([{'command': 'use', 'entity': 'test3', 'error': ''}, {'command': 'create', 'error': '', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['1', "'jack'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['2', "'jill'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['3', "'john'"]}, {'command': 'show', 'entity': 'tables', 'error': ''}])
 
 
