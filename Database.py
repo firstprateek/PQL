@@ -303,20 +303,24 @@ class Database :
     def Export_DB(self, _path = 0):
         if _path  == 0 : full_path = export_db_path + self.Build_Output_File_Name()
         elif _path == 1: full_path = directory_path + self.Build_Output_File_Name()
+
         file = open(full_path, 'w')
         #print(self.list_of_tables)
         #print(self.all_tables)
-        if not self.list_of_tables:
+        #file.truncate()
+        if self.list_of_tables:
             for temp in self.list_of_tables:
                 table_name = temp[0]
                 item = self.all_tables.get(table_name)
                 file.write(self.Build_A_Export_Line(item[0]))
                 for row_item in item[1]:
                     file.write(self.Build_A_Export_Line(row_item))
-        file.write(self.key_word_PQL + '\n')
-        if not self.list_of_tables:
+            file.write(self.key_word_PQL + '\n')
             for item in self.list_of_tables:
                 file.write(self.Build_A_Export_Line(item))
+        else:
+            file.write(self.key_word_PQL + '\n')
+        file.close()
 
     # Show error
     def Show_Error(self, _query):
@@ -530,13 +534,16 @@ class Database :
     # Execute Drop Table
     def _Query_DROP(self, _query):
         tb_name = _query['entity']
+        print(self.all_tables)
         if tb_name in self.all_tables:
+            #print(self.all_tables)
             del self.all_tables[tb_name]
             for i in self.list_of_tables:
                 if i[0] == tb_name:
                     self.list_of_tables.remove(i)
         else:
             self.Show_Error(_query)
+        #print(self.list_of_tables)
 
     # Execute Drop Database
     def Remove_DB(self, _query):
@@ -586,8 +593,9 @@ db = Database([{'command': 'use', 'entity': 'test4'},
                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test'},
                {'command': 'commit'},
-               {'command':'drop', 'entity':'test'},
-               {'command':'commit'}])
+               {'command':'drop','entity':'test1'},
+               {'command':'commit'}
+               ])
 
 
 
