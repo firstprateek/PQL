@@ -307,9 +307,14 @@ class Database :
         for item in self.list_of_tables:
             file.write(self.Build_A_Export_Line(item))
 
+    # Show error
+    def Show_Error(self, _query):
+        print(_query['error'])
+        print(_query['error_flag'])
+        exit(0)
     # Execute USE
     def _Query_USE(self, _query_use):
-        db_name = _query_use.get('entity')
+        db_name = _query_use.get('entity')+'.db'
         self.export_file_name = db_name
         if db_name :
             self.Read_db_File(db_name)
@@ -327,6 +332,7 @@ class Database :
         return result
     def _Query_CREATE(self, _query_create):
         tb_name = _query_create.get('entity')
+
         if tb_name:
             new_tb = []
             new_line = self.Count_New_Line()
@@ -337,12 +343,13 @@ class Database :
 
             content_new_tb = []
             col_declare = []
-            value = _query_create['value']
+            value = _query_create['values']
             for item in value:
                 string = ''
                 col_name = item['column_name']
                 col_type = item['column_type']
                 string = col_name + ':' + col_type
+
                 col_declare.append(string)
             content_new_tb.append(col_declare)
             content_new_tb.append([])
@@ -474,8 +481,24 @@ class Database :
                     self.Print_A_Line(x[run_result])
                 run_result = run_result + 1
 
+    # Execute Show
+    def _Query_SHOW(self, _query):
+        tb_name = _query['entity']
+        if tb_name : self.Show_A_Table_Content(tb_name)
+        else:
+            self.Show_Error(_query)
 
+    # Execute Commit
+    def _Query_COMMIT(self,_query):
+        self.Export_DB()
 
+    # Execute Drop Table
+    def _Query_DROP(self, _query):
+        tb_name = _query['entity']
+        if tb_name in self.all_tables:
+            del self.all_tables[tb_name]
+        else:
+            self.Show_Error(_query)
 
     # Testing System
     def System_Test(self):
@@ -488,6 +511,13 @@ class Database :
                 self._Query_INSERT(_query)
             elif _query['command'] == 'select':
                 self._Query_SELECT(_query)
+            elif _query['command'] =='show':
+                self._Query_SHOW(_query)
+            elif _query['command'] =='commit':
+                self._Query_COMMIT(_query)
+            elif _query['command' == 'drop']:
+                self._Query_DROP(_query)
+
 
 
 
@@ -500,18 +530,25 @@ class Database :
         self.command_list = _command_list
         self.System_Test()
 
-db = Database([{"command":"use", "entity":"test1.db", 'error':''},
-               {"command":'create', "entity":"test1", "value":[{"column_name": "id", "column_type": "int"},{"column_name": "name", "column_type": "string"}], 'error':''},
-               {"command":'insert', "entity":"test1", 'row_values':['1', "jack"], 'error':''},
-               {"command": 'insert', "entity": "test1", 'row_values': ['2', "A"], 'error': ''},
-               {"command":"select", "entity": "test1","column_list":['sid'],
-                "where":[
-                    {'column_name': 'id','operator': '==','argument':'1'}, 'and',
-                    {'column_name': 'id','operator': '>=','argument':'3'},'or',
-                    {'column_name': 'id','operator': '==','argument':'5'}]}])
+# db = Database([{"command":"use", "entity":"test1.db", 'error':''},
+#                {"command":'create', "entity":"test1", "value":[{"column_name": "id", "column_type": "int"},{"column_name": "name", "column_type": "string"}], 'error':''},
+#                {"command":'insert', "entity":"test1", 'row_values':['1', "jack"], 'error':''},
+#                {"command": 'insert', "entity": "test1", 'row_values': ['2', "A"], 'error': ''},
+#                {"command":"select", "entity": "test1","column_list":['sid'],
+#                 "where":[
+#                     {'column_name': 'id','operator': '==','argument':'1'}, 'and',
+#                     {'column_name': 'id','operator': '>=','argument':'3'},'or',
+#                     {'column_name': 'id','operator': '==','argument':'5'}]}])
+db = Database([{'command': 'use', 'entity': 'test1'},
+               {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test'},
+               {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test'},
+               {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test'},
+               {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test'},
+               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test'},
+               {'command': 'commit'}])
 
-db.Show_All_Table_Content()
-print(db.all_tables)
-db.Export_DB()
+#db.Show_All_Table_Content()
+#print(db.all_tables)
+#db.Export_DB()
 
 

@@ -2,7 +2,8 @@ id:int,name:string
 1,'I love you'
 id:int,name:string
 1,jack
-2,A
+2,jill
+3,john
 PQL_DATABASE_TOC
-test,0,2
-test1,2,3
+name,0,2
+test,2,4

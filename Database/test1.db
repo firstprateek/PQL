@@ -1,4 +1,4 @@
 id:int,name:string
 1,'I love you'
 PQL_DATABASE_TOC
-test,0,2
+name,0,2
