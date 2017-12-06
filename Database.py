@@ -620,10 +620,10 @@ class Database :
                 bo = False
             match.append(bo)
             i = i + 1
-        print(match)
+        #print(match)
         if False in match:
             print(_query['error'])
-            print(self.all_tables[_entity][1])
+            #print(self.all_tables[_entity][1])
             exit(0)
         else:
             row_index = 0
@@ -635,7 +635,7 @@ class Database :
                         row[int(v)] = new_value[index_col.index(v)]
                 row_index = row_index + 1
 
-        print(self.all_tables[_entity][1])
+        #print(self.all_tables[_entity][1])
 
     # Testing System
     def System_Test(self):
@@ -676,7 +676,7 @@ db = Database([{'command': 'use', 'entity': 'test4'},
                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1'},
                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
-
+               {'command':'commit'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
                           {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'update','entity': 'test1',
                 'set':[{'operator': '=', 'argument': 'jill', 'column_name': 'name'}, {'operator': '=', 'argument': 'a', 'column_name':'id'}], 'error':'mtich'},
