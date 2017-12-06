@@ -482,11 +482,11 @@ class Database :
         for _query in self.command_list:
             if _query['command'] == 'use':
                 self._Query_USE(_query)
-            if _query['command'] =='create':
+            elif _query['command'] =='create':
                 self._Query_CREATE(_query)
-            if _query['command'] =='insert':
+            elif _query['command'] =='insert':
                 self._Query_INSERT(_query)
-            if _query['command'] == 'select':
+            elif _query['command'] == 'select':
                 self._Query_SELECT(_query)
 
 
