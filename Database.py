@@ -192,6 +192,7 @@ class Database :
                 if len(line.strip()): self.db_end_line = num
                 file.closed
         except FileNotFoundError:
+            print('db_parse')
             self.Export_DB(1)
             self.Read_db_File(file_name)
 
@@ -536,10 +537,13 @@ class Database :
             self.Show_Error(_query)
 
     # Execute Drop Database
+    def Remove_DB(self, _query):
+        db_name = _query['entity']
+        full_path = directory_path + self.Build_Output_File_Name()
+        os.remove(full_path)
+
     def _Query_DROPDB(self, _query):
-        self.all_tables.clear()
-        for i in self.list_of_tables:
-            del i
+        self.Remove_DB(_query)
             
     # Testing System
     def System_Test(self):
@@ -579,7 +583,8 @@ db = Database([{'command': 'use', 'entity': 'test4'},
                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test'},
                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test'},
-               {'command': 'commit'}])
+               {'command': 'commit'},
+               {'command':'dropdb', 'entity':'test4'}])
 
 
 
