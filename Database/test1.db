@@ -1,14 +1,4 @@
-sid:int,sname:string,grade:int,age:int
-4,'jones',3,30
-2,'jones',6,23
-3,'ahab',7,21
-4,'omoby',8,33
 id:int,name:string
-1,'jack'
-2,'jill'
-3,'john'
-name:string
+1,'I love you'
 PQL_DATABASE_TOC
-student,0,5
-id,5,4
-name,9,1
+test,0,2

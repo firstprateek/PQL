@@ -466,9 +466,9 @@ class Database :
                 connection = connection + 1
             #print(last_condition_result)
             run_result = 0
-            print(tb_name)
             while run_result < len(last_condition_result):
                 if last_condition_result[run_result] == True :
+                    print(tb_name)
                     x = self.all_tables[tb_name][1]
                     #print(x[run_result])
                     self.Print_A_Line(x[run_result])
@@ -501,14 +501,14 @@ class Database :
         self.System_Test()
 
 db = Database([{"command":"use", "entity":"test1.db", 'error':''},
-               {"command":'create', "entity":"test", "value":[{"column_name": "id", "column_type": "int"},{"column_name": "name", "column_type": "string"}], 'error':''},
-               {"command":'insert', "entity":"test", 'row_values':['1', "jack"], 'error':''},
-               {"command": 'insert', "entity": "test", 'row_values': ['2', "A"], 'error': ''},
-               {"command":"select", "entity": "student","column_list":['sid'],
+               {"command":'create', "entity":"test1", "value":[{"column_name": "id", "column_type": "int"},{"column_name": "name", "column_type": "string"}], 'error':''},
+               {"command":'insert', "entity":"test1", 'row_values':['1', "jack"], 'error':''},
+               {"command": 'insert', "entity": "test1", 'row_values': ['2', "A"], 'error': ''},
+               {"command":"select", "entity": "test1","column_list":['sid'],
                 "where":[
-                    {'column_name': 'sname','operator': '==','argument':'jones'}, 'and',
-                    {'column_name': 'sid','operator': '>=','argument':'3'},'or',
-                    {'column_name': 'sid','operator': '==','argument':'5'}]}])
+                    {'column_name': 'id','operator': '==','argument':'1'}, 'and',
+                    {'column_name': 'id','operator': '>=','argument':'3'},'or',
+                    {'column_name': 'id','operator': '==','argument':'5'}]}])
 
 db.Show_All_Table_Content()
 print(db.all_tables)
