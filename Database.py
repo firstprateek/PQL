@@ -586,12 +586,12 @@ class Database :
         self.command_list = _command_list
         self.System_Test()
 
-db = Database([{'command': 'use', 'entity': 'test4'},
-               {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test'},
-               {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test'},
-               {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test'},
-               {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test'},
-               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test'},
+db = Database([{'command': 'use', 'entity': 'test3'},
+               {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test1'},
+               {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test1'},
+               {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test1'},
+               {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1'},
+               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
                {'command': 'commit'},
                {'command':'drop','entity':'test1'},
                {'command':'commit'}
