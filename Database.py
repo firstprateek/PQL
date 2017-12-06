@@ -179,15 +179,22 @@ class Database :
         file.close()
 
     # A function to read the db file
-    def Read_db_File(self, file_name):
-        full_path = directory_path + file_name
-        file = open(full_path, "r")
-        for num, line in enumerate(file, 1):
 
-            if self.key_word_PQL in line:
-                self.db_start_line = num
-            if len(line.strip()): self.db_end_line = num
-        file.close()
+    def Read_db_File(self, file_name):
+        full_path = ''
+        full_path = directory_path + file_name
+        try:
+            file = open(full_path, "r")
+            for num, line in enumerate(file, 1):
+
+                if self.key_word_PQL in line:
+                    self.db_start_line = num
+                if len(line.strip()): self.db_end_line = num
+            file.close()
+        except FileNotFoundError:
+            self.Export_DB(1)
+            self.Read_db_File(file_name)
+            raise
 
     # A function is to buil the dictionary , all_tables
     def Read_Table_Content(self, file_name):
@@ -293,8 +300,9 @@ class Database :
         return result + '\n'
 
     # Write down to a text file
-    def Export_DB(self):
-        full_path = export_db_path + self.Build_Output_File_Name()
+    def Export_DB(self, _path = 0):
+        if _path  == 0 : full_path = export_db_path + self.Build_Output_File_Name()
+        elif _path == 1: full_path = directory_path + self.Build_Output_File_Name()
         file = open(full_path, 'w')
         #print(self.list_of_tables)
         #print(self.all_tables)
@@ -319,17 +327,21 @@ class Database :
         self.export_file_name = db_name
         if db_name :
             self.Read_db_File(db_name)
-            if self.db_end_line != self.db_start_line: self.Read_db_Content(db_name)
-            else: exit(0)
-            self.Get_List_Of_Tables()
-            self.Read_Table_Content(db_name)
+            if self.db_end_line != self.db_start_line:
+                self.Read_db_Content(db_name)
+                self.Get_List_Of_Tables()
+                self.Read_Table_Content(db_name)
+            else:
+                self.list_of_tables = []
+                self.all_tables = {}
         else:
             _query_use["error"] = "Can not find" + db_name
             exit(1)
 
     # Execute CREATE
     def Count_New_Line(self):
-        result = int(self.list_of_tables[len(self.list_of_tables)-1][1]) + int(self.list_of_tables[len(self.list_of_tables)-1][2])
+        result = 0
+        if self.list_of_tables != [] :result = int(self.list_of_tables[len(self.list_of_tables)-1][1]) + int(self.list_of_tables[len(self.list_of_tables)-1][2])
         return result
     def _Query_CREATE(self, _query_create):
         tb_name = _query_create.get('entity')
@@ -562,16 +574,7 @@ class Database :
         self.command_list = _command_list
         self.System_Test()
 
-# db = Database([{"command":"use", "entity":"test1.db", 'error':''},
-#                {"command":'create', "entity":"test1", "value":[{"column_name": "id", "column_type": "int"},{"column_name": "name", "column_type": "string"}], 'error':''},
-#                {"command":'insert', "entity":"test1", 'row_values':['1', "jack"], 'error':''},
-#                {"command": 'insert', "entity": "test1", 'row_values': ['2', "A"], 'error': ''},
-#                {"command":"select", "entity": "test1","column_list":['sid'],
-#                 "where":[
-#                     {'column_name': 'id','operator': '==','argument':'1'}, 'and',
-#                     {'column_name': 'id','operator': '>=','argument':'3'},'or',
-#                     {'column_name': 'id','operator': '==','argument':'5'}]}])
-db = Database([{'command': 'use', 'entity': 'test1'},
+db = Database([{'command': 'use', 'entity': 'test2'},
                {'values': [{'column_type': 'int', 'column_name': 'id'}, {'column_type': 'string', 'column_name': 'name'}], 'command': 'create', 'entity': 'test'},
                {'row_values': ['1', 'jack'], 'command': 'insert', 'entity': 'test'},
                {'row_values': ['2', 'jill'], 'command': 'insert', 'entity': 'test'},
@@ -579,8 +582,5 @@ db = Database([{'command': 'use', 'entity': 'test1'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test'},
                {'command': 'commit'}])
 
-#db.Show_All_Table_Content()
-#print(db.all_tables)
-#db.Export_DB()
 
 
