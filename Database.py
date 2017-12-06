@@ -498,7 +498,7 @@ class Database :
                 for k in colum_tab:
                     if v in k: index_result.append(colum_tab.index(k))
             #print(index_result)
-            self.Show_Select_Result(tb_name,selected_row, index_result)
+            if Code == 0 : self.Show_Select_Result(tb_name,selected_row, index_result)
 
 
     # Execute Show
@@ -517,9 +517,18 @@ class Database :
         tb_name = _query['entity']
         if tb_name in self.all_tables:
             del self.all_tables[tb_name]
+            for i in self.list_of_tables:
+                if i[0] == tb_name:
+                    self.list_of_tables.remove(i)
         else:
             self.Show_Error(_query)
 
+    # Execute Drop Database
+    def _Query_DROPDB(self, _query):
+        self.all_tables.clear()
+        for i in self.list_of_tables:
+            del i
+            
     # Testing System
     def System_Test(self):
         for _query in self.command_list:
@@ -535,8 +544,10 @@ class Database :
                 self._Query_SHOW(_query)
             elif _query['command'] =='commit':
                 self._Query_COMMIT(_query)
-            elif _query['command' == 'drop']:
+            elif _query['command'] == 'drop':
                 self._Query_DROP(_query)
+            elif _query['command'] == 'dropdb':
+                self._Query_DROPDB(_query)
 
 
 
