@@ -9,7 +9,8 @@ commit;
 {
 	"command": "use",
 	"entity": "test5",
-	"error": "error_message"
+	"error": "error_message",
+	"error_flag": "pql_parse_error" #example
 }
 
 {
