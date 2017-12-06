@@ -1,3 +1,5 @@
+#!/usr/bin/python3.5
+
 import sys
 from Parser import Parser
 from Database import Database
