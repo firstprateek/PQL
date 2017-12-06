@@ -1,8 +1,8 @@
 sid:int,sname:string,grade:int,age:int
-1,'jones',3,30
-2,'jonah',6,23
-3,'ahab',7,21
-4,'omoby',8,33
+4,jones,3,30
+2,jones,6,23
+3,ahab,7,21
+4,omoby,8,33
 id:int,name:string
 1,'jack'
 2,'jill'

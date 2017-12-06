@@ -377,6 +377,106 @@ class Database :
             _query_insert['error'] = 'Can not find the table'
             exit(0)
 
+    # Execute select
+    def Delete_Single_Quote(self, _string):
+        return _string.replace("'","")
+
+    def Get_Col_List(self, _tb_name):
+        result_list = []
+        temp = self.all_tables[_tb_name][0]
+        #print(temp)
+        for col in temp:
+            location = col.find(':')
+            column_name = col[:location]
+            column_type = col[location + 1:]
+            result_list.append(column_name)
+        return (result_list)
+
+    def Build_Condition(self, _value, _operator, _arg):
+        result = False
+        if _operator == '==':
+            result = _value == _arg
+        elif _operator == '<>' or _operator == '!=':
+            result =  _value != _arg
+        elif _operator == '>':
+            result =  _value > _arg
+        elif _operator == '>=':
+            result =  _value >= _arg
+        elif _operator == '<':
+            result = _value < _arg
+        elif _operator == '<=':
+            result =  _value <= _arg
+        return  result
+
+    def Connection_Condition(self, _value1, _con, _value2):
+        if _con is 'and': return  _value1 and _value2
+        elif _con is 'or': return  _value1 or _value2
+        else: return  False
+
+    def _Query_SELECT(self, _query_select):
+        tb_name = _query_select['entity']
+        if tb_name :
+            col_list = self.Get_Col_List(tb_name)
+            #print(col_list)
+            selected_col_list = []
+            temp = _query_select['column_list']
+            if len(temp) == 1 and temp[0] == '*':
+                selected_col_list = col_list
+            else:
+                selected_col_list = temp
+
+            pointer = 0
+            result_of_all_conditions = []
+            while pointer < len(_query_select['where']):
+                if pointer % 2 == 0:
+                    result_a_condition = []
+                    condition = _query_select['where'][pointer]
+                    number_col = 0
+                    temp = self.all_tables[tb_name][0]
+                    #print(temp)
+                    for item in temp:
+                        if condition['column_name'] in item:
+                            number_col = temp.index(item)
+                    #print(number_col)
+                    all_row_data = self.all_tables[tb_name][1]
+                    #print(all_row_data)
+
+                    result_a_row = []
+                    for row in all_row_data:
+                        #print(row)
+                        row[number_col] = self.Delete_Single_Quote(row[number_col])
+                        #print(row[number_col])
+                        condition['operator'] = self.Delete_Single_Quote(condition['operator'])
+                        condition['argument'] = self.Delete_Single_Quote(condition['argument'])
+                        temp = self.Build_Condition(row[number_col], condition['operator'], condition['argument'])
+                        result_a_condition.append(temp)
+                    result_of_all_conditions.append(result_a_condition)
+                pointer = pointer + 1
+            #print(result_of_all_conditions)
+            connection = 0
+            last_condition_result = result_of_all_conditions[0]
+            i = 1
+            while connection < len(_query_select['where']):
+                if connection % 2 == 1:
+                    link = _query_select['where'][connection]
+                    for val in result_of_all_conditions[i]:
+                        index_val = result_of_all_conditions[i].index(val)
+                        last_condition_result[index_val] = self.Connection_Condition(last_condition_result[index_val], link, val)
+                    i = i + 1
+                connection = connection + 1
+            #print(last_condition_result)
+            run_result = 0
+            print(tb_name)
+            while run_result < len(last_condition_result):
+                if last_condition_result[run_result] == True :
+                    x = self.all_tables[tb_name][1]
+                    #print(x[run_result])
+                    self.Print_A_Line(x[run_result])
+                run_result = run_result + 1
+
+
+
+
     # Testing System
     def System_Test(self):
         for _query in self.command_list:
@@ -386,6 +486,9 @@ class Database :
                 self._Query_CREATE(_query)
             if _query['command'] =='insert':
                 self._Query_INSERT(_query)
+            if _query['command'] == 'select':
+                self._Query_SELECT(_query)
+
 
 
     def __init__(self, _command_list):
@@ -400,8 +503,15 @@ class Database :
 db = Database([{"command":"use", "entity":"test1.db", 'error':''},
                {"command":'create', "entity":"test", "value":[{"column_name": "id", "column_type": "int"},{"column_name": "name", "column_type": "string"}], 'error':''},
                {"command":'insert', "entity":"test", 'row_values':['1', "jack"], 'error':''},
-               {"command": 'insert', "entity": "test", 'row_values': ['2', "A"], 'error': ''}])
+               {"command": 'insert', "entity": "test", 'row_values': ['2', "A"], 'error': ''},
+               {"command":"select", "entity": "student","column_list":['sid'],
+                "where":[
+                    {'column_name': 'sname','operator': '==','argument':'jones'}, 'and',
+                    {'column_name': 'sid','operator': '>=','argument':'3'},'or',
+                    {'column_name': 'sid','operator': '==','argument':'5'}]}])
+
 db.Show_All_Table_Content()
+print(db.all_tables)
 db.Export_DB()
 
 
