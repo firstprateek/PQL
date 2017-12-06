@@ -518,6 +518,7 @@ class Database :
                     if v in k: index_result.append(colum_tab.index(k))
             #print(index_result)
             if Code == 0 : self.Show_Select_Result(tb_name,selected_row, index_result)
+            if Code ==1 : return selected_row
 
 
     # Execute Show
@@ -553,7 +554,13 @@ class Database :
 
     def _Query_DROPDB(self, _query):
         self.Remove_DB(_query)
-            
+
+    # Execute Delete
+    def _Query_DELETE(self, _query):
+        _newquery = [{'command':'select', 'entity':_query['entity'], 'column_list':['*'], 'where':_query['where']}]
+        selected_row = self._Query_SELECT(_newquery,1)
+        print(selected_row)
+
     # Testing System
     def System_Test(self):
         for _query in self.command_list:
@@ -573,6 +580,8 @@ class Database :
                 self._Query_DROP(_query)
             elif _query['command'] == 'dropdb':
                 self._Query_DROPDB(_query)
+            elif _query['command'] == 'delete':
+                self._Query_DELETE(_query)
 
 
 
@@ -593,6 +602,9 @@ db = Database([{'command': 'use', 'entity': 'test4'},
                {'row_values': ['3', 'john'], 'command': 'insert', 'entity': 'test1'},
                {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and', {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'select', 'column_list': ['name'], 'entity': 'test1'},
                {'command': 'commit'},
+               {'where': [{'operator': '>=', 'argument': 'jill', 'column_name': 'name'}, 'and',
+                          {'operator': '=', 'argument': '3', 'column_name': 'id'}], 'command': 'delete',
+                'entity': 'test1'}
                ])
 
 
