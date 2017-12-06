@@ -3,7 +3,7 @@ import pdb
 
 class Parser:
 	COMMANDS = [
-		'use', 'show', 'create', 'select', 'insert', 'delete', 'commit', 'drop'
+		'use', 'show', 'create', 'select', 'insert', 'delete', 'commit', 'drop', 'update'
  	]
 
  	COLUMN_TYPES = [ 'int', 'string' ]
@@ -88,6 +88,11 @@ class Parser:
 			return query
 
 		if 'error' in query_hash:
+			return query
+
+		if query_hash['entity'] == '':
+			query[0]['error_flag'] = 'pql_parse_error'
+			query[0]['error'] = 'Entity not selected'
 			return query
 
 		if not query_hash['entity'][0].isalpha() or not query_hash['entity'].isalnum():
@@ -307,11 +312,61 @@ class Parser:
 
 		return [query_hash]
 
+	def delete_command(self, query_parts):
+		query_hash = { "command": query_parts[0] }
+
+		where_query = []
+		if 'where' in query_parts:
+			index = query_parts.index('where')
+			query_parts_1 = query_parts[0:index]
+			where_query = query_parts[index::]
+			query_parts = query_parts_1
+
+		if query_parts[1] != 'from':
+			query_hash['error_flag'] = 'pql_parse_error'
+			query_hash['error'] = 'Table not mentioned'
+			
+			return [query_hash]
+
+		query_hash["entity"] = query_parts[2]
+		
+		if where_query:
+			operations_query = [x for x in where_query[1::] if x != 'and' and x != 'or']
+
+			if len(operations_query) % 3:
+				query_hash['error_flag'] = 'pql_parse_error'
+				query_hash['error'] = "Incorrect Syntax for values"
+				return [query_hash]
+
+			counter = 1
+			query_hash["where"] = []
+			
+			while counter < len(where_query):
+				query_hash["where"] += [{
+					'column_name': where_query[counter],
+					'operator': where_query[counter + 1],
+					'argument': where_query[counter + 2]
+				}]
+
+				if counter + 3 >= len(where_query):
+					break
+
+				query_hash["where"] += [where_query[counter + 3]]
+				
+				counter += 4
+
+		return [query_hash]
+
 	def commit_command(self, query_parts):
 		return [{
 			"command": query_parts[0]
 		}]
 
+	def drop_database(self, query_parts):
+		return [{
+			"command": query_parts[0],
+			"entity": query_parts[1]
+		}]
 	
 	# ----- Command Implementation Finished -----
 
