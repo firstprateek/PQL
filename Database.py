@@ -1,3 +1,51 @@
+
+Conversation opened. 1 unread message.
+
+Skip to content
+Using University of Minnesota Duluth Mail with screen readers
+Search
+
+
+
+
+Mail
+COMPOSE
+Labels
+Inbox (240)
+Starred
+Sent Mail
+Drafts (11)
+Deleted Messages
+More 
+Hangouts
+
+ 
+ 
+ 
+  More 
+1 of 713  
+ 
+Print all In new window
+(no subject) 
+Inbox
+x 
+
+An Nguyen
+Attachments2:01 PM (1 minute ago)
+
+to me 
+Attachments area
+    
+Click here to Reply or Forward
+Using 18.14 GB
+Manage
+Program Policies
+Powered by Google
+Last account activity: 16 minutes ago
+Details
+
+
+0
 import sys
 import os
 import random
@@ -394,10 +442,26 @@ class Database :
         else:
             print("table_exists")
             exit(ErrorCode["table_exists"])
-        # print(self.list_of_tables)
-        # print(self.all_tables)
 
     # Execute INSERT
+    def Get_Type_Of_A_Table(self, _tb_name):
+        column = self.all_tables[_tb_name][0]
+        type_of_col = []
+        for item in column:
+            index = item.index(':')
+            type_of_col.append(item[index+1:])
+        return type_of_col
+
+    def Matching_Type(self, _type, _value):
+        if _type == 'string' and _value.isdigit() == True:
+            return False
+        elif _type == 'string' and _value.isdigit() == False:
+            return True
+        elif _type == 'int' and _value.isdigit() == True:
+            return True
+        elif _type == 'int' and _value.isdigit() == False:
+            return False
+
     def Increase_Number_Of_Line(self, _tb_name):
         count = 0;
         while count < len(self.list_of_tables):
@@ -416,13 +480,25 @@ class Database :
 
                 row_insert_value = _query_insert['row_values']
                 if len(row_insert_value) == len(content_db[0]):
-                    content_db[1].append(row_insert_value)
+                    inserted_row = []
+                    cols_type = self.Get_Type_Of_A_Table(tb_name)
+                    running_pointer = 0
+                    while running_pointer < len(content_db[0]):
+                        if self.Matching_Type(cols_type[running_pointer], row_insert_value[running_pointer]) == True:
+                            inserted_row.append(row_insert_value[running_pointer])
+                        else:
+                            print('type_mismatch')
+                            exit(ErrorCode['type_mismatch'])
+                        running_pointer = running_pointer + 1
+                    content_db[1].append(inserted_row)
                 else:
                     print("Need to have values to insert")
                     exit(0)
         else:
             print("table_exists")
             exit(ErrorCode["table_exists"])
+        print(self.list_of_tables)
+        print(self.all_tables)
 
     # Execute select
     def Delete_Single_Quote(self, _string):
@@ -544,13 +620,12 @@ class Database :
 
     # Execute Show
     def _Query_SHOW(self, _query):
-        #tb_name = _query['entity']
-        self.Show_All_Table_Content()
-        # if tb_name != 'tables' : self.Show_A_Table_Content(tb_name)
-        # elif tb_name == 'tables' : self.Show_All_Table_Content()
-        # else:
-        #     print("_Query_SHOW")
-        #     exit(0)
+        _tables = _query['entity']
+        if _tables:
+            self.Show_All_Table_Content()
+        else:
+            print('You mean showing all tables')
+            exit(0)
 
     # Execute Commit
     def _Query_COMMIT(self,_query):
@@ -560,16 +635,20 @@ class Database :
     def _Query_DROP(self, _query):
         tb_name = _query['entity']
         print(self.all_tables)
-        if tb_name in self.all_tables:
-            #print(self.all_tables)
-            del self.all_tables[tb_name]
-            for i in self.list_of_tables:
-                if i[0] == tb_name:
-                    self.list_of_tables.remove(i)
+        if self.Is_Table_Name_Valid(tb_name):
+            if tb_name:
+                del self.all_tables[tb_name]
+                for i in self.list_of_tables:
+                    if i[0] == tb_name:
+                        self.list_of_tables.remove(i)
+            else:
+                print("Please include the table name to drop")
+                exit(0)
         else:
-            print("_Query_DROP")
-            exit(0)
-        #print(self.list_of_tables)
+            print('table_exist')
+            exit(ErrorCode['table_exists'])
+        print(self.all_tables)
+        print(self.list_of_tables)
 
     # Execute Drop Database
     def Remove_DB(self, _query):
@@ -660,8 +739,6 @@ class Database :
                         row[int(v)] = new_value[index_col.index(v)]
                 row_index = row_index + 1
 
-        #print(self.all_tables[_entity][1])
-
     # Testing System
     def System_Test(self):
         for _query in self.command_list:
@@ -703,15 +780,19 @@ class Database :
 
 #db = Database([{'command': 'use', 'entity': 'test3', 'error': ''}, {'command': 'create', 'error': '', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['1', "'jack'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['2', "'jill'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['3', "'john'"]}, {'command': 'show', 'entity': 'tables', 'error': ''}])
 
-# db = Database([
-#     {"command":"use", "entity":'Test'},
-#     {'command': 'create', 'error': '',
-#      'entity': 'test',
-#      'values': [{'column_name': 'id', 'column_type': 'int'},
-#                 {'column_name': 'name', 'column_type': 'string'}]},
-#     {'command': 'insert', 'error': '', 'entity': 'test', 'row_values':
-#                                                                         ['2', "'jill'"]
-#                                                                                            }
+db = Database([
+    {"command":"use", "entity":'Test'},
+    {'command': 'create', 'error': 'test',
+     'entity': 'test',
+     'values': [{'column_name': 'id', 'column_type': 'int'},
+                {'column_name': 'name', 'column_type': 'string'}]},
+    {'command': 'insert', 'error': '', 'entity': 'test', 'row_values':
+                                                                        ['0', "Jill"]
+                                                                                           },
+    {'command':'show', 'entity':'tables'}
     # {"command":"create", "entity":"test"}
-#])
+])
 
+# Database.py
+# Open with
+# Displaying Database.py.
