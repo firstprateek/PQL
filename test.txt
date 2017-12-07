@@ -1,6 +1,88 @@
-use test 10; create table ta (name string, id int); insert into ta values ('
-The name
-is a
-couple of new lines', 5);
-select name from ta;
+use test1;
+show tables;
+
+use test1;
+show tables;
+select sid, sname from student;
+
+use test2;
+create table test (id int, name string);
+show tables;
+commit;
+
+use test2;
+create table test (id int, name string);
+insert into test values (1, 'I love you');
+show tables;
+select id, name from test;
+commit;
+
+use test3;
+create table test (id int, name string);
+insert into test values (1, 'i love you');
+update test set id=2;
+show tables;
+select id, name from test;
+commit;
+
+use test3;
+create table test (id int, name string);
+insert into test values (1, 'jack');
+insert into test values (2, 'jill');
+insert into test values (3, 'john');
+update test set name='bob' where name='jill';
+show tables;
+select id, name from test;
+commit;
+
+use test3;
+create table test (id int, name string);
+insert into test values (1, 'jack');
+insert into test values (2, 'jill');
+insert into test values (3, 'john');
+delete from test where id > 1;
+show tables;
+select id, name from test;
+commit;
+
+use test4;
+create table test (id int, name string);
+show tables;
+drop table test;
+show tables;
+commit;
+
+
+use test4;
+create table test (id int, name string);
+show tables;
+commit;
+drop database;
+use test4;
+create table test2 (id int);
+show tables;
+commit;
+
+use test5;
+create table test (id int, name string);
+insert into test values (1, 'jack');
+insert into test values (2, 'jill');
+insert into test values (3, 'john');
+select id from test where name>='jill';
+commit;
+
+use test5;
+create table test (id int, name string);
+insert into test values (1, 'jack');
+insert into test values (2, 'jill');
+insert into test values (3, 'john');
+select * from test where name>='jill';
+commit;
+
+use test5;
+create table test (id int, name string);
+insert into test values (1, 'jack');
+insert into test values (2, 'jill');
+insert into test values (3, 'john');
+select name from test where name>='jill' and id = 3;
 commit;

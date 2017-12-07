@@ -84,9 +84,13 @@ class Parser:
         if 'entity' not in query_hash:
             return query
 
+        print("error")
+        print(query_hash)
+        print(query_hash['error'])
         if 'error' in query_hash:
-            return query
-
+            if query_hash['error'] != '':
+                return query
+        print("after")
         if query_hash['entity'] == '':
             query[0]['error_flag'] = 'pql_parse_error'
             query[0]['error'] = 'Entity not selected'
@@ -129,10 +133,10 @@ class Parser:
 
             for x in query_hash['column_list']:
                 if not x[0].isalpha() or not x.isalnum():
-                    query[0]['error_flag'] = 'pql_parse_error'
-                    query[0][
-                        'error'] = 'Column_name name incorrect format. Has to be alphanumeric starting with alphabet'
-                    return query
+                    if x != "*":
+                        query[0]['error_flag'] = 'pql_parse_error'
+                        query[0]['error'] = 'column_list name incorrect format. Has to be alphanumeric starting with alphabet'
+                        return query
 
         if query[0]['command'] == 'update':
             for x in query_hash['set']:
@@ -144,15 +148,25 @@ class Parser:
                     if isinstance(x, dict):
                         x['argument'] = self.extract_string(x['argument'])
 
+        # print("command")
+        # print(query[0]['command'])
         if query[0]['command'] == 'insert':
+            # print("this")
+            # print(query_hash['row_values'])
             query_hash['row_values'] = list(map(lambda x: self.extract_string(x), query_hash['row_values']))
+            # print(query_hash['row_values'])
 
-            for x in query_hash['row_values']:
-                if not x.isdigit():
-                    if not x[0].isalpha() or not x.isalnum():
-                        query[0]['error_flag'] = 'pql_parse_error'
-                        query[0]['error'] = 'Column_value incorrect format. Has to be alphanumeric'
-                        return query
+            # for x in query_hash['row_values']:
+            #     print("")
+            #     print(x)
+            #     print("x.isdigit()")
+            #     print(x.isdigit())
+            #     print("")
+            #     if not x.isdigit():
+            #         if not x[0].isalpha() or not x.isalnum():
+            #             query[0]['error_flag'] = 'pql_parse_error'
+            #             query[0]['error'] = 'row value incorrect format. Has to be alphanumeric'
+            return query
 
         return query
 
@@ -173,7 +187,7 @@ class Parser:
         }]
 
     def create_command(self, query_parts):
-        query_hash = {"command": query_parts[0], "error": ""}
+        query_hash = {"command": query_parts[0], "error": "", "error_flag": "" }
 
         if query_parts[1] != 'table':
             query_hash['error_flag'] = 'pql_parse_error'
@@ -222,11 +236,11 @@ class Parser:
     def show_command(self, query_parts):
         return [{
             'command': query_parts[0],
-            'entity': query_parts[1], "error": ""
+            'entity': query_parts[1], "error": "", "error_flag": ""
         }]
 
     def insert_command(self, query_parts):
-        query_hash = {"command": query_parts[0], "error": ""}
+        query_hash = {"command": query_parts[0], "error": "", "error_flag": "" }
 
         if query_parts[1] != 'into':
             query_hash['error_flag'] = 'pql_parse_error'
@@ -287,7 +301,7 @@ class Parser:
         return [query_hash]
 
     def select_command(self, query_parts):
-        query_hash = {"command": query_parts[0], "error": ""}
+        query_hash = {"command": query_parts[0], "error": "", "error_flag": "" }
 
         where_query = []
         if 'where' in query_parts:
@@ -334,7 +348,7 @@ class Parser:
         return [query_hash]
 
     def delete_command(self, query_parts):
-        query_hash = {"command": query_parts[0], "error": ""}
+        query_hash = {"command": query_parts[0], "error": "", "error_flag": "" }
 
         where_query = []
         if 'where' in query_parts:
@@ -380,24 +394,24 @@ class Parser:
 
     def commit_command(self, query_parts):
         return [{
-            "command": query_parts[0], "error": ""
+            "command": query_parts[0], "error": "", "error_flag": ""
         }]
 
     def drop_command(self, query_parts):
         if query_parts[1] == 'database':
             return [{
-                "command": "dropdb", "error": ""
+                "command": "dropdb", "error": "", "error_flag": ""
             }]
         elif query_parts[1] == 'table':
             return [{
                 "command": "drop",
-                "entity": query_parts[2], "error": ""
+                "entity": query_parts[2], "error": "", "error_flag": ""
             }]
 
     # ['update', 'test', 'set', 'name', '=', "'bob'", 'where', 'name', '=', "'jill'"]:
     def update_command(self, query_parts):
         query_hash = {
-            "command": query_parts[0], "entity": query_parts[1], "error": ""
+            "command": query_parts[0], "entity": query_parts[1], "error": "", "error_flag": ""
         }
 
         if query_parts[2] != 'set':
@@ -406,11 +420,19 @@ class Parser:
 
             return [query_hash]
 
-        where_index = query_parts.index('where')
+        where_index = 0
+        if 'where' in query_parts:
+            where_index = query_parts.index('where')
         set_index = query_parts.index('set')
 
-        set_query_parts = query_parts[set_index:where_index]
-        where_query_parts = query_parts[where_index::]
+        where_query_parts = []
+        if where_index:
+            set_query_parts = query_parts[set_index:where_index]
+            where_query_parts = query_parts[where_index::]
+        else:
+            set_query_parts = query_parts[set_index::]
+            where_query_parts = []
+
 
         set_arguments = set_query_parts[1::]
         if len(set_arguments) % 3:
