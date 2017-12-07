@@ -233,18 +233,17 @@ class Database :
         full_path = directory_path + file_name
         try:
             file = open(full_path, "r")
-            data = file.read()
-            if self.key_word_PQL in data:
-                for num, line in enumerate(file, 1):
-                    if self.key_word_PQL in line:
-                        self.db_start_line = num
-                    if len(line.strip()): self.db_end_line = num
-            else:
-                print("dp_parse")
+            for num, line in enumerate(file, 1):
+                if self.key_word_PQL in line:
+                    self.db_start_line = num
+                if len(line.strip()): self.db_end_line = num
+            file.close()
+            print(self.db_start_line)
+            if self.db_start_line == 0:
+                print("db_parse")
                 exit(ErrorCode["dp_parse"])
         except FileNotFoundError:
             self.Export_DB(self.export_file_name)
-            self.Read_db_File(self.export_file_name)
 
     # A function is to buil the dictionary , all_tables
     def Read_Table_Content(self, file_name):
@@ -329,14 +328,17 @@ class Database :
         db_name = _query_use.get('entity')
         self.export_file_name = db_name
         if db_name :
+            # print(self.db_start_line)
+            # print(self.db_end_line)
+            print(self.all_tables)
+            print(self.list_of_tables)
             self.Read_db_File(db_name)
-            if self.db_end_line != self.db_start_line:
-                self.Read_db_Content(db_name)
-                self.Get_List_Of_Tables()
-                self.Read_Table_Content(db_name)
-            else:
-                self.list_of_tables = []
-                self.all_tables = {}
+            self.Read_db_Content(db_name)
+            self.Get_List_Of_Tables()
+            self.Read_Table_Content(db_name)
+            print(self.all_tables)
+            print(self.list_of_tables)
+
         else:
             # if db_name = ' ' print no_selected db
             print("no_selected_db")
@@ -357,7 +359,6 @@ class Database :
     def _Query_CREATE(self, _query_create):
         tb_name = _query_create.get('entity')
         # check if the table exists or not
-
         if self.Is_Table_Name_Valid(tb_name) == False:
             if tb_name:
                 #Update the information for the new table
@@ -428,6 +429,8 @@ class Database :
         tb_name = _query_insert['entity']
         if self.Is_Table_Name_Valid(tb_name) == True:
             if tb_name:
+                print(self.all_tables)
+                print(self.list_of_tables)
                 self.Increase_Number_Of_Line(tb_name)
 
                 content_db = self.all_tables[tb_name]
@@ -451,8 +454,8 @@ class Database :
         else:
             print("table_exists")
             exit(ErrorCode["table_exists"])
-        print(self.list_of_tables)
         print(self.all_tables)
+        print(self.list_of_tables)
 
     # Execute select
     def Delete_Single_Quote(self, _string):
@@ -739,17 +742,17 @@ class Database :
 #db = Database([{'command': 'use', 'entity': 'test3', 'error': ''}, {'command': 'create', 'error': '', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['1', "'jack'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['2', "'jill'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['3', "'john'"]}, {'command': 'show', 'entity': 'tables', 'error': ''}])
 
 db = Database([
-    {"command":"use", "entity":'Test'},
-    {'command': 'create', 'error': 'test',
-     'entity': 'test',
+    {"command":"use", "entity":'Test1'},
+    {'command': 'create', 'error': 'test9',
+     'entity': 'test999',
      'values': [{'column_name': 'id', 'column_type': 'int'},
                 {'column_name': 'name', 'column_type': 'string'}]},
-    {'command': 'create', 'error': 'test1',
+    {'command': 'create', 'error': 'test999',
      'entity': 'test2',
      'values': [{'column_name': 'id', 'column_type': 'int'},
                 {'column_name': 'name', 'column_type': 'string'}]},
-    {'command': 'insert', 'error': '', 'entity': 'test', 'row_values':
-                                                                        ['0', "Jill"]
+    {'command': 'insert', 'error': '', 'entity': 'test2', 'row_values':
+                                                                        ['3', "Jill"]
                                                                                            },
     {'command':'commit'}
     #{'command':'show', 'entity':'tables'},
