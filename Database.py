@@ -233,13 +233,15 @@ class Database :
         full_path = directory_path + file_name
         try:
             file = open(full_path, "r")
-            for num, line in enumerate(file, 1):
-                if self.key_word_PQL in line:
-                    self.db_start_line = num
-                else:
-                    print("dp_parse")
-                    exit(ErrorCode["dp_parse"])
-                if len(line.strip()): self.db_end_line = num
+            data = file.read()
+            if self.key_word_PQL in data:
+                for num, line in enumerate(file, 1):
+                    if self.key_word_PQL in line:
+                        self.db_start_line = num
+                    if len(line.strip()): self.db_end_line = num
+            else:
+                print("dp_parse")
+                exit(ErrorCode["dp_parse"])
         except FileNotFoundError:
             self.Export_DB(self.export_file_name)
             self.Read_db_File(self.export_file_name)
@@ -583,32 +585,34 @@ class Database :
 
     # Execute Commit
     def _Query_COMMIT(self,_query):
-        self.Export_DB(1)
+        self.Export_DB(0)
 
     # Execute Drop Table
     def _Query_DROP(self, _query):
         tb_name = _query['entity']
         print(self.all_tables)
         if self.Is_Table_Name_Valid(tb_name):
-            if tb_name:
                 del self.all_tables[tb_name]
                 for i in self.list_of_tables:
                     if i[0] == tb_name:
                         self.list_of_tables.remove(i)
-            else:
-                print("Please include the table name to drop")
-                exit(0)
         else:
             print('table_exist')
             exit(ErrorCode['table_exists'])
-        print(self.all_tables)
-        print(self.list_of_tables)
 
     # Execute Drop Database
     def Remove_DB(self, _query):
         db_name = _query['entity']
-        full_path = directory_path + self.Build_Output_File_Name()
-        os.remove(full_path)
+        if db_name:
+            full_path = directory_path + db_name
+            try:
+                os.remove(full_path)
+            except FileNotFoundError:
+                print("no_selected_db")
+                exit(ErrorCode["no_selected_db"])
+        else:
+            print("no_selected_db")
+            exit(ErrorCode["no_selected_db"])
 
     def _Query_DROPDB(self, _query):
         self.Remove_DB(_query)
@@ -747,8 +751,10 @@ db = Database([
     {'command': 'insert', 'error': '', 'entity': 'test', 'row_values':
                                                                         ['0', "Jill"]
                                                                                            },
-    {'command':'show', 'entity':'tables'}
-    # {"command":"create", "entity":"test"}
+    {'command':'commit'}
+    #{'command':'show', 'entity':'tables'},
+    # {"command":"drop", "entity":""},
+    #{'command':"dropdb", "entity":"Test"}
 ])
 
 # Database.py
