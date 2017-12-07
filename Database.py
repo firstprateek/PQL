@@ -573,8 +573,10 @@ class Database :
     # Execute Show
     def _Query_SHOW(self, _query):
         _tables = _query['entity']
-        if _tables:
+        if _tables == 'tables':
             self.Show_All_Table_Content()
+        elif self.Is_Table_Name_Valid(_query['entity']):
+            self.Show_A_Table_Content(_query['entity'])
         else:
             print('You mean showing all tables')
             exit(0)
@@ -736,6 +738,10 @@ db = Database([
     {"command":"use", "entity":'Test'},
     {'command': 'create', 'error': 'test',
      'entity': 'test',
+     'values': [{'column_name': 'id', 'column_type': 'int'},
+                {'column_name': 'name', 'column_type': 'string'}]},
+    {'command': 'create', 'error': 'test1',
+     'entity': 'test2',
      'values': [{'column_name': 'id', 'column_type': 'int'},
                 {'column_name': 'name', 'column_type': 'string'}]},
     {'command': 'insert', 'error': '', 'entity': 'test', 'row_values':
