@@ -12,6 +12,8 @@ for x in query_list:
 	if 'error_flag' in x:
 		if x['error_flag'] == 'pql_parse_error':
 			exit(6)
+		if x['error_flag'] == 'no_selected_db':
+			exit(5)
 
 print("")
 print(" ---------------- RESULT ---------------")

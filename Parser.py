@@ -84,13 +84,13 @@ class Parser:
         if 'entity' not in query_hash:
             return query
 
-        print("error")
-        print(query_hash)
-        print(query_hash['error'])
+        # print("error")
+        # print(query_hash)
+        # print(query_hash['error'])
         if 'error' in query_hash:
             if query_hash['error'] != '':
                 return query
-        print("after")
+        # print("after")
         if query_hash['entity'] == '':
             query[0]['error_flag'] = 'pql_parse_error'
             query[0]['error'] = 'Entity not selected'
