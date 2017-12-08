@@ -7,7 +7,7 @@ PQL_TOC_KEY = 'PQL_DATABASE_TOC'
 directory_path = os.getcwd() + '/'
 export_db_path = os.getcwd() + '/'
 ErrorCode = {
-    'dp_parse':1, # the db name doesn't exist
+    'db_parse':1, # the db name doesn't exist
     'no_selected_db' : 2, # no selected db
     'table_exists' : 3, # A table exist so can not create another one same name
     'type_mismatch' : 4, # the inserted value does not match type with the columne
@@ -241,7 +241,7 @@ class Database :
             # print(self.db_start_line)
             if self.db_start_line == 0:
                 print("db_parse")
-                exit(ErrorCode["dp_parse"])
+                exit(ErrorCode["db_parse"])
         except FileNotFoundError:
             self.Export_DB(self.export_file_name)
 
@@ -509,102 +509,105 @@ class Database :
     def _Query_SELECT(self, _query_select, Code=0):
         tb_name = _query_select['entity']
         selected_col_list = []
-        if tb_name :
-            col_list = self.Get_Col_List(tb_name)
-            #print(col_list)
-            temp = _query_select['column_list']
-            if len(temp) == 1 and temp[0] == '*':
-                selected_col_list = col_list
-            else:
-                selected_col_list = temp
-            #print(selected_col_list)
+        if self.Is_Table_Name_Valid(tb_name):
+            if tb_name :
+                col_list = self.Get_Col_List(tb_name)
+                #print(col_list)
+                temp = _query_select['column_list']
+                if len(temp) == 1 and temp[0] == '*':
+                    selected_col_list = col_list
+                else:
+                    selected_col_list = temp
+                #print(selected_col_list)
 
-            # check query has condition or not
-            try:
-                _has_condition = _query_select['where'] != []
-            except KeyError:
-                _has_condition = False
-            # has some conditions
-            pointer = 0
-            result_of_all_conditions = []
-            last_condition_result = []
-            if _has_condition:
-                while pointer < len(_query_select['where']):
-                    if pointer % 2 == 0:
-                        result_a_condition = []
-                        condition = _query_select['where'][pointer]
-                        number_col = 0
-                        temp = self.all_tables[tb_name][0]
-                        #print(temp)
-                        for item in temp:
-                            if condition['column_name'] in item:
-                                number_col = temp.index(item)
-                        #print(number_col)
-                        all_row_data = self.all_tables[tb_name][1]
-                        #print(all_row_data)
+                # check query has condition or not
+                try:
+                    _has_condition = _query_select['where'] != []
+                except KeyError:
+                    _has_condition = False
+                # has some conditions
+                pointer = 0
+                result_of_all_conditions = []
+                last_condition_result = []
+                if _has_condition:
+                    while pointer < len(_query_select['where']):
+                        if pointer % 2 == 0:
+                            result_a_condition = []
+                            condition = _query_select['where'][pointer]
+                            number_col = 0
+                            temp = self.all_tables[tb_name][0]
+                            #print(temp)
+                            for item in temp:
+                                if condition['column_name'] in item:
+                                    number_col = temp.index(item)
+                            #print(number_col)
+                            all_row_data = self.all_tables[tb_name][1]
+                            #print(all_row_data)
 
-                        result_a_row = []
-                        for row in all_row_data:
-                            #print(row)
-                            row[number_col] = self.Delete_Single_Quote(row[number_col])
-                            #print(row[number_col])
-                            condition['operator'] = self.Delete_Single_Quote(condition['operator'])
-                            condition['argument'] = self.Delete_Single_Quote(condition['argument'])
-                            temp = self.Build_Condition(row[number_col], condition['operator'], condition['argument'])
-                            result_a_condition.append(temp)
-                        result_of_all_conditions.append(result_a_condition)
-                    pointer = pointer + 1
-                # print(result_of_all_conditions)
-                last_condition_result = result_of_all_conditions[0]
+                            result_a_row = []
+                            for row in all_row_data:
+                                #print(row)
+                                row[number_col] = self.Delete_Single_Quote(row[number_col])
+                                #print(row[number_col])
+                                condition['operator'] = self.Delete_Single_Quote(condition['operator'])
+                                condition['argument'] = self.Delete_Single_Quote(condition['argument'])
+                                temp = self.Build_Condition(row[number_col], condition['operator'], condition['argument'])
+                                result_a_condition.append(temp)
+                            result_of_all_conditions.append(result_a_condition)
+                        pointer = pointer + 1
+                    # print(result_of_all_conditions)
+                    last_condition_result = result_of_all_conditions[0]
 
-                _has_connection = False
-                for _item in _query_select['where']:
-                    if _item == 'and' or _item == 'or': _has_connection = True
-                #print(_has_connection)
-                if _has_connection:
-                    i = 1
-                    connection = 0
-                    while connection < len(_query_select['where']):
-                        if connection % 2 == 1:
-                            link = _query_select['where'][connection]
-                            for val in result_of_all_conditions[i]:
-                                index_val = result_of_all_conditions[i].index(val)
-                                last_condition_result[index_val] = self.Connection_Condition(
-                                    last_condition_result[index_val], link, val)
-                            i = i + 1
-                        connection = connection + 1
-                    #print(last_condition_result)
-            # no condition, set all TRUE
-            else:
-                row_result = []
-                all_row = self.all_tables[tb_name][1]
-                for i in all_row:
-                    row_result.append(True)
-                result_of_all_conditions.append(row_result)
+                    _has_connection = False
+                    for _item in _query_select['where']:
+                        if _item == 'and' or _item == 'or': _has_connection = True
+                    #print(_has_connection)
+                    if _has_connection:
+                        i = 1
+                        connection = 0
+                        while connection < len(_query_select['where']):
+                            if connection % 2 == 1:
+                                link = _query_select['where'][connection]
+                                for val in result_of_all_conditions[i]:
+                                    index_val = result_of_all_conditions[i].index(val)
+                                    last_condition_result[index_val] = self.Connection_Condition(
+                                        last_condition_result[index_val], link, val)
+                                i = i + 1
+                            connection = connection + 1
+                        #print(last_condition_result)
+                # no condition, set all TRUE
+                else:
+                    row_result = []
+                    all_row = self.all_tables[tb_name][1]
+                    for i in all_row:
+                        row_result.append(True)
+                    result_of_all_conditions.append(row_result)
 
-                for item in result_of_all_conditions[0]:
-                    last_condition_result.append(item)
-            #print(result_of_all_conditions)
-            run_result = 0
-            selected_row = []
-            #print(last_condition_result)
-            while run_result < len(last_condition_result):
-                if last_condition_result[run_result] == True:
-                    x = self.all_tables[tb_name][1]
-                    # print(x[run_result])
-                    selected_row.append(x[run_result])
-                run_result = run_result + 1
-            # print(selected_row)
-            # print(selected_col_list)
-            index_result = []
-            for v in selected_col_list:
-                colum_tab = self.all_tables[tb_name][0]
-                for k in colum_tab:
-                    if v in k: index_result.append(colum_tab.index(k))
-            # print(index_result)
-            if Code == 0 : self.Show_Select_Result(tb_name,selected_row, index_result)
-            if Code ==1 : return selected_row
-
+                    for item in result_of_all_conditions[0]:
+                        last_condition_result.append(item)
+                #print(result_of_all_conditions)
+                run_result = 0
+                selected_row = []
+                #print(last_condition_result)
+                while run_result < len(last_condition_result):
+                    if last_condition_result[run_result] == True:
+                        x = self.all_tables[tb_name][1]
+                        # print(x[run_result])
+                        selected_row.append(x[run_result])
+                    run_result = run_result + 1
+                # print(selected_row)
+                # print(selected_col_list)
+                index_result = []
+                for v in selected_col_list:
+                    colum_tab = self.all_tables[tb_name][0]
+                    for k in colum_tab:
+                        if v in k: index_result.append(colum_tab.index(k))
+                # print(index_result)
+                if Code == 0 : self.Show_Select_Result(tb_name,selected_row, index_result)
+                if Code ==1 : return selected_row
+        else:
+            print("db_parse")
+            exit(ErrorCode['db_parse'])
 
     # Execute Show
     def _Query_SHOW(self, _query):
@@ -659,8 +662,16 @@ class Database :
                 i[2] = str(int(i[2]) - 1)
     def _Query_DELETE(self, _query):
         _entity = _query['entity']
-        _where = _query['where']
-        _newquery = {'command':'select', 'entity':_entity, 'column_list':['*'], 'where':_where}
+        _has_condition = True
+        try:
+            _where = _query['where']
+        except:
+            _has_condition = False
+            _where = False
+        if _has_condition:
+            _newquery = {'command':'select', 'entity':_entity, 'column_list':['*'], 'where':_where}
+        else:
+            _newquery = {'command': 'select', 'entity': _entity, 'column_list': ['*']}
         selected_row = self._Query_SELECT(_newquery,1)
         #print(selected_row)
         row_content = self.all_tables[_entity][1]
@@ -689,9 +700,18 @@ class Database :
         return 0
     def _Query_UPDATE(self, _query):
         _entity = _query['entity']
-        _where = _query['where']
+        _has_condition = False
+        try:
+            _where = _query['where']
+            _has_condition = True
+        except KeyError:
+            _where = False
+            _has_condition = False
         _set = _query['set']
-        _newquery = {'command':'select', 'entity':_entity, 'column_list':['*'], 'where':_where}
+        if _has_condition:
+            _newquery = {'command':'select', 'entity':_entity, 'column_list':['*'], 'where':_where}
+        else:
+            _newquery = {'command': 'select', 'entity': _entity, 'column_list': ['*']}
         selected_row = self._Query_SELECT(_newquery, 1)
         row_col_type = self.all_tables[_entity][0]
         row_content = self.all_tables[_entity][1]
@@ -764,47 +784,4 @@ class Database :
         self.list_of_tables = []
         self.command_list = _command_list
         self.System_Test()
-        # try:
-            
-        # except Exception or IOError or EOFError or EnvironmentError:
-        #     print('Unspecified')
-        #     exit(0)
 
-#db = Database([{'command': 'use', 'entity': 'test3', 'error': ''}, {'command': 'create', 'error': '', 'entity': 'test', 'values': [{'column_name': 'id', 'column_type': 'int'}, {'column_name': 'name', 'column_type': 'string'}]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['1', "'jack'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['2', "'jill'"]}, {'command': 'insert', 'error': '', 'entity': 'test', 'row_values': ['3', "'john'"]}, {'command': 'show', 'entity': 'tables', 'error': ''}])
-
-db = Database([
-    {"command":"use", "entity":'Test1'},
-    {'command': 'create', 'error': 'test9',
-     'entity': 'test999',
-     'values': [{'column_name': 'id', 'column_type': 'int'},
-                {'column_name': 'name', 'column_type': 'string'}]},
-    {'command': 'create', 'error': 'test999',
-     'entity': 'test2',
-     'values': [{'column_name': 'id', 'column_type': 'int'},
-                {'column_name': 'name', 'column_type': 'string'}]},
-    {'command': 'insert', 'error': '', 'entity': 'test2', 'row_values':
-                                                                        ['3', "jill"]
-                                                                                          },
-    {'command': 'insert', 'error': '', 'entity': 'test2', 'row_values':
-                                                                        ['1', "an"]
-                                                                                          },
-    {'command':'commit'},
-    {'command':'show', 'entity':'tables'},
-
-{
-      'command':'select',
-      'error':'',
-      'error_flag':'',
-      'entity':'test2',
-      'column_list':[
-         'id',
-         # 'name'
-      ]
-},
-    # {"command":"drop", "entity":""},
-    #{'command':"dropdb", "entity":"Test"}
-])
-
-# Database.py
-# Open with
-# Displaying Database.py.

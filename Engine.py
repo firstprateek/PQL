@@ -14,13 +14,13 @@ for x in query_list:
 			exit(6)
 		if x['error_flag'] == 'no_selected_db':
 			exit(5)
-
-print("")
-print(" ---------------- RESULT ---------------")
-print("")
-print(query_list)
-print("")
-print(" ---------------- RESULT ---------------")
-print("")
+#
+# print("")
+# print(" ---------------- RESULT ---------------")
+# print("")
+# print(query_list)
+# print("")
+# print(" ---------------- RESULT ---------------")
+# print("")
 
 pql_database = Database(query_list)
